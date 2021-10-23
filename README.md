@@ -47,7 +47,7 @@ $ npm run start:prod
 
 ```bash
 # all tests
-npm run
+npm run test
 
 # unit tests
 $ npm run test:unit
