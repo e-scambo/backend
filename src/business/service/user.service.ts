@@ -7,13 +7,18 @@ import {
 import { FilterQuery } from 'mongoose';
 import { UserRepository } from '../../infrastructure/repository/user.repository';
 import { User, UserDocument } from '../../infrastructure/schema/user.schema';
+import {
+  CreateUserDTO,
+  UpdatePasswordDTO,
+  UpdateUserDTO,
+} from '../../presentation/dto/user.dto';
 import { PasswordUtil } from '../util/password.util';
 
 @Injectable()
 export class UserService {
   constructor(private readonly _repository: UserRepository) {}
 
-  async create(item: any): Promise<User> {
+  async create(item: CreateUserDTO): Promise<User> {
     await this.validateUnique({
       $or: [{ email: item.email }, { phone: item.phone }],
     });
@@ -29,7 +34,7 @@ export class UserService {
     return result;
   }
 
-  async updateById(_id: string, item: any): Promise<User> {
+  async updateById(_id: string, item: UpdateUserDTO): Promise<User> {
     // 1. Se for informado o email, verificar se outro usuário já o possui
     const query: FilterQuery<UserDocument> = { $or: [] };
     if (item.email) {
@@ -56,7 +61,10 @@ export class UserService {
     }
   }
 
-  async updatePassword(_id: string, passwords: any): Promise<void> {
+  async updatePassword(
+    _id: string,
+    passwords: UpdatePasswordDTO,
+  ): Promise<void> {
     // 1. Buscar usuário e verificar se o mesmo existe
     const user: User = await this._repository.findOne({ _id });
     if (!user) {
