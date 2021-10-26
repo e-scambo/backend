@@ -1,7 +1,7 @@
 import { ReadOnlyMock } from './readonly.mock';
 
 export class UserMock {
-  static get repositoryRequest() {
+  static get request() {
     return {
       name: 'John Doe',
       email: 'johndoe@mail.com',
@@ -12,10 +12,17 @@ export class UserMock {
     };
   }
 
-  static get repositoryResponse() {
+  static get response() {
     return {
-      ...UserMock.repositoryRequest,
+      ...UserMock.request,
       ...ReadOnlyMock.database,
+    };
+  }
+
+  static get updatePasswordRequest() {
+    return {
+      current_password: 'secretPassWord',
+      new_password: 'anotherSecretePassWord',
     };
   }
 }

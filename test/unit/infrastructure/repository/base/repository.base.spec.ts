@@ -13,8 +13,8 @@ describe('BaseRepository (UserRepository extends)', () => {
   beforeAll(() => {
     model = mock();
     repository = new UserRepository(model);
-    request = UserMock.repositoryRequest;
-    response = UserMock.repositoryResponse;
+    request = UserMock.request;
+    response = UserMock.response;
     databaseError = DatabaseMock.error;
   });
 

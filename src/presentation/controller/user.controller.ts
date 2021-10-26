@@ -51,7 +51,7 @@ export class UserController {
 
   @Patch('/:user_id/password')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updatePassworD(
+  async updatePassword(
     @Param() param: UserParamByIdDTO,
     @Body() dto: UpdatePasswordDTO,
   ): Promise<void> {
