@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './config/module/app.module';
 import { MorganLogger } from './config/logger/morgan.logger';
 import { TimeoutInterceptor } from './config/interceptor/timeout.interceptor';
+import { AllExceptionsFilter } from './config/filter/exception.filter';
 
 async function bootstrap() {
   const { PORT } = process.env;
@@ -14,6 +15,7 @@ async function bootstrap() {
 function setMiddlewares(app: INestApplication): void {
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new TimeoutInterceptor())
+  app.useGlobalFilters(new AllExceptionsFilter());
   MorganLogger.setupMorgan(app);
 }
 
