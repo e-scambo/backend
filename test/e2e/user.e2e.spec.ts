@@ -3,6 +3,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { getId } from 'json-generator';
 import { Model } from 'mongoose';
 import * as Request from 'supertest';
+import { PasswordUtil } from '../../src/business/util/password.util';
 import {
   User,
   UserDocument,
@@ -136,7 +137,7 @@ describe('AppController (e2e)', () => {
           .expect(HttpStatus.BAD_REQUEST);
 
         validateBadRequestDTOBody(response.body, [
-          'phone phone must follow the pattern (XX) 9XXXX-XXXX or (XX) XXXX-XXXX and the ddd must be betwween 11 and 99',
+          'phone must follow the pattern (XX) 9XXXX-XXXX or (XX) XXXX-XXXX and the ddd must be betwween 11 and 99',
         ]);
       });
     });
@@ -179,6 +180,10 @@ describe('AppController (e2e)', () => {
   });
 
   describe('PUT /users/:user_id', () => {
+    afterAll(async () => {
+      savedUser = await saveUser();
+    });
+
     describe('when update a user by id is successful', () => {
       it('should return the updated user', async () => {
         const response = await request
@@ -211,6 +216,21 @@ describe('AppController (e2e)', () => {
         validateBadRequestBody(
           response.body,
           'An user with this email or phone already exists.',
+        );
+      });
+    });
+
+    describe('when the user does not exists', () => {
+      it('should return NOtFoundException', async () => {
+        await userModel.deleteMany({});
+
+        const response = await request
+          .put(`/users/${savedUser._id}`)
+          .send({ name: UserMock.request.name })
+          .expect(HttpStatus.NOT_FOUND);
+        validateNotFoundBody(
+          response.body,
+          'User not found or already removed.',
         );
       });
     });
@@ -287,7 +307,7 @@ describe('AppController (e2e)', () => {
           .expect(HttpStatus.BAD_REQUEST);
 
         validateBadRequestDTOBody(response.body, [
-          'phone phone must follow the pattern (XX) 9XXXX-XXXX or (XX) XXXX-XXXX and the ddd must be betwween 11 and 99',
+          'phone must follow the pattern (XX) 9XXXX-XXXX or (XX) XXXX-XXXX and the ddd must be betwween 11 and 99',
         ]);
       });
     });
@@ -337,5 +357,11 @@ describe('AppController (e2e)', () => {
     expect(body).toHaveProperty('phone', UserMock.request.phone);
     expect(body).toHaveProperty('state', UserMock.request.state);
     expect(body).toHaveProperty('city', UserMock.request.city);
+  };
+
+  const saveUser = async () => {
+    const newUser = { ...UserMock.request };
+    newUser.password = PasswordUtil.encrypt(newUser.password);
+    return userModel.create(newUser);
   };
 });

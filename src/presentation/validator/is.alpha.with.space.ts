@@ -15,8 +15,8 @@ export class IsAlphaWithSpaceConstraint
     return AlphaValidatorUtil.isAlphaWithSpaces(str);
   }
 
-  defaultMessage?(validationArguments?: ValidationArguments): string {
-    return `${validationArguments.property} must contains letters and a single space between words`;
+  defaultMessage?(args?: ValidationArguments): string {
+    return `${args.property} must contains letters and a single space between words`;
   }
 }
 
