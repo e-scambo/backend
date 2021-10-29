@@ -20,3 +20,9 @@ export function validateBadRequestDTOBody(body: any, messages: string[]) {
   });
   expect(body).toHaveProperty('error', 'Bad Request');
 }
+
+export function validateForbiddenBody(body: any, message: string) {
+  expect(body).toHaveProperty('statusCode', HttpStatus.FORBIDDEN);
+  expect(body).toHaveProperty('message', message);
+  expect(body).toHaveProperty('error', 'Forbidden');
+}

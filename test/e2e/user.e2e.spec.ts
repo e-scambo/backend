@@ -1,6 +1,6 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { getModelToken } from '@nestjs/mongoose';
-import { getId } from 'json-generator';
+import { getId, getStr } from 'json-generator';
 import { Model } from 'mongoose';
 import * as Request from 'supertest';
 import { PasswordUtil } from '../../src/business/util/password.util';
@@ -13,6 +13,7 @@ import { UserMock } from '../mock/user.mock';
 import {
   validateBadRequestBody,
   validateBadRequestDTOBody,
+  validateForbiddenBody,
   validateNotFoundBody,
 } from '../util/exception.validation.util';
 
@@ -345,6 +346,64 @@ describe('AppController (e2e)', () => {
         validateBadRequestDTOBody(response.body, [
           'user_id must be a mongodb id',
         ]);
+      });
+    });
+
+    describe('PATCH /users/:user_id/password', () => {
+      let newPassword: any;
+      let currentPassword: any;
+      beforeAll(async () => {
+        await userModel.deleteMany({});
+        savedUser = await saveUser();
+        currentPassword = 'secretPassWord';
+        newPassword = getStr(12);
+      });
+
+      describe(`when changing a user's password succsfully`, () => {
+        it(`should change user's password`, async () => {
+          const response = await request
+            .patch(`/users/${savedUser._id}/password`)
+            .send({
+              current_password: currentPassword,
+              new_password: newPassword,
+            })
+            .expect(HttpStatus.NO_CONTENT);
+          expect(response.body).toMatchObject({});
+        });
+      });
+
+      describe(`when changing a user's password with incorrect current password`, () => {
+        it('should return forbidden exception', async () => {
+          const response = await request
+            .patch(`/users/${savedUser._id}/password`)
+            .send({
+              current_password: currentPassword,
+              new_password: newPassword,
+            })
+            .expect(HttpStatus.FORBIDDEN);
+          validateForbiddenBody(
+            response.body,
+            'The password informed does not match with current password.',
+          );
+        });
+      });
+
+      describe(`when changing user's passord`, () => {
+        it('should return not found exception', async () => {
+          await userModel.deleteMany({});
+          const response = await request
+            .patch(`/users/${savedUser._id}/password`)
+            .send({
+              current_password: currentPassword,
+              new_password: newPassword,
+            })
+            .expect(HttpStatus.NOT_FOUND);
+
+          validateNotFoundBody(
+            response.body,
+            'User not found or already removed.',
+          );
+        });
       });
     });
   });
