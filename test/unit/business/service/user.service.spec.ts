@@ -222,7 +222,29 @@ describe('UserService', () => {
                 } catch (err) {
                     expect(err).toMatchObject(exception);
                 }
-            })
-        })
+            });
+        });
+
+        describe('When user is not found', () => {
+            it('should throw not found exception', async () => {
+                const exception = new NotFoundException('User not found or already removed.');
+
+                const newPassword = getStr(10, 'UTF-8');
+                
+                const { password, ...rest } = UserMock.response
+
+                repository.findOne = jest.fn().mockResolvedValueOnce(undefined);
+
+                repository.updateOne = jest.fn().mockResolvedValueOnce({...rest, password: newPassword});
+                
+                const request = { current_password: UserMock.request.password, new_password: newPassword };
+
+                try {
+                    await service.updatePassword(getId('objectId'), request);
+                } catch (err) {
+                    expect(err).toMatchObject(exception);
+                }
+            });
+        });
     });
 })
