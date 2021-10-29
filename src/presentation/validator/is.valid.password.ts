@@ -13,8 +13,8 @@ export class IsValidPasswordConstraint implements ValidatorConstraintInterface {
     return PasswordValidatorUtil.isValidPassword(str);
   }
 
-  defaultMessage?(validationArguments?: ValidationArguments): string {
-    return `${validationArguments.property} must contains letters, numbers and the special characters: !@#$%&*`;
+  defaultMessage?(args?: ValidationArguments): string {
+    return `${args.property} must contains letters, numbers and the special characters: !@#$%&*`;
   }
 }
 

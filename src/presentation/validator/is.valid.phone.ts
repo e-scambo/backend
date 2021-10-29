@@ -13,9 +13,9 @@ export class IsValidPhoneConstraint implements ValidatorConstraintInterface {
     return PhoneValidatorUtil.isValidPhone(str);
   }
 
-  defaultMessage?(validationArguments?: ValidationArguments): string {
+  defaultMessage?(args?: ValidationArguments): string {
     return (
-      `${validationArguments.property} phone must follow the pattern (XX) 9XXXX-XXXX or (XX) XXXX-XXXX ` +
+      `${args.property} must follow the pattern (XX) 9XXXX-XXXX or (XX) XXXX-XXXX ` +
       'and the ddd must be betwween 11 and 99'
     );
   }
