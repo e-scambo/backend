@@ -1,12 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { SchemaUtil } from '../util/schema.util';
 
 export type UserDocument = User & Document;
 
-@Schema({
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
-  versionKey: false,
-})
+@Schema(SchemaUtil.options)
 export class User {
   @Prop()
   name: string;
