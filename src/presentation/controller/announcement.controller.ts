@@ -1,0 +1,47 @@
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  UploadedFiles,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { MongoQuery, MongoQueryModel } from 'nest-mongo-query-parser';
+import { AnnouncementService } from '../../business/service/announcement.service';
+import { AnnouncementInterceptor } from '../../config/interceptor/announcement.interceptor';
+import { CreateAnnouncementDTO } from '../dto/announcement.dto';
+import { UserParamByIdDTO } from '../dto/user.dto';
+import { ImageEnum } from '../enum/image.enum';
+
+@Controller('users/:user_id/announcements')
+@UseInterceptors(AnnouncementInterceptor)
+export class AnnouncementController {
+  constructor(private readonly _service: AnnouncementService) {}
+
+  @Post()
+  @UseInterceptors(
+    FilesInterceptor('images', ImageEnum.MAX_IMAGE_QUANTITY, {
+      limits: { fileSize: ImageEnum.MAX_FILE_SIZE },
+    }),
+  )
+  async create(
+    @Param() param: UserParamByIdDTO,
+    @UploadedFiles() images: Express.Multer.File[],
+    @Body() body: CreateAnnouncementDTO,
+  ) {
+    body.images = images;
+    body.owner = param.user_id;
+    return this._service.create(body);
+  }
+
+  @Get()
+  async find(
+    @Param() param: UserParamByIdDTO,
+    @MongoQuery() query: MongoQueryModel,
+  ) {
+    query.filter = { ...query.filter, owner: param.user_id };
+    return this._service.findWithQuery(query);
+  }
+}
