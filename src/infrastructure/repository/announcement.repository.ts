@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { MongoQueryModel } from 'nest-mongo-query-parser';
 import {
   Announcement,
@@ -11,8 +11,8 @@ import { BaseRepository } from './base/repository.base';
 
 @Injectable()
 export class AnnouncementRepository extends BaseRepository<
-  AnnouncementDocument,
-  Announcement
+AnnouncementDocument,
+Announcement
 > {
   constructor(
     @InjectModel(Announcement.name)
@@ -30,5 +30,17 @@ export class AnnouncementRepository extends BaseRepository<
       .sort(query.sort)
       .populate(AnnouncementPopulate)
       .exec();
+  }
+
+  async findOne(filter: FilterQuery<AnnouncementDocument>): Promise<AnnouncementDocument> {
+    return this._model.findOne(filter)
+      .populate(AnnouncementPopulate)
+      .exec();
+  }
+
+  async updateOne(filter: FilterQuery<AnnouncementDocument>, body: Announcement): Promise<AnnouncementDocument> {
+    return this._model.findOneAndUpdate(filter, body, { new: true })
+      .populate(AnnouncementPopulate)
+      .exec()
   }
 }
