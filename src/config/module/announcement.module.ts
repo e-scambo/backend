@@ -10,7 +10,7 @@ import {
 } from '../../infrastructure/schema/announcement.schema';
 import { Image, ImageSchema } from '../../infrastructure/schema/image.schema';
 import { User, UserSchema } from '../../infrastructure/schema/user.schema';
-import { AnnouncementController } from '../../presentation/controller/announcement.controller';
+import { UserAnnouncementController } from '../../presentation/controller/user.announcement.controller';
 
 @Module({
   imports: [
@@ -20,7 +20,7 @@ import { AnnouncementController } from '../../presentation/controller/announceme
       { name: User.name, schema: UserSchema },
     ]),
   ],
-  controllers: [AnnouncementController],
+  controllers: [UserAnnouncementController],
   providers: [
     AnnouncementService,
     AnnouncementRepository,
