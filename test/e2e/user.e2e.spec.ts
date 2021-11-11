@@ -17,7 +17,7 @@ import {
   validateNotFoundBody,
 } from '../util/exception.validation.util';
 
-describe('AppController (e2e)', () => {
+describe('UserController (e2e)', () => {
   let app: INestApplication;
   let request: Request.SuperTest<Request.Test>;
   let userModel: Model<UserDocument>;
@@ -42,7 +42,7 @@ describe('AppController (e2e)', () => {
           .send(UserMock.request)
           .expect(HttpStatus.CREATED);
 
-        validateSuccess(response.body);
+        validateSuccessBody(response.body);
         savedUser = response.body;
       });
     });
@@ -148,9 +148,9 @@ describe('AppController (e2e)', () => {
     describe('when get a user by id is successful', () => {
       it('should return the founded user', async () => {
         const response = await request
-          .get(`/users/${savedUser._id}`)
+          .get(`/users/${savedUser.id}`)
           .expect(HttpStatus.OK);
-        validateSuccess(response.body);
+        validateSuccessBody(response.body);
       });
     });
 
@@ -188,10 +188,10 @@ describe('AppController (e2e)', () => {
     describe('when update a user by id is successful', () => {
       it('should return the updated user', async () => {
         const response = await request
-          .put(`/users/${savedUser._id}`)
+          .put(`/users/${savedUser.id}`)
           .send({ name: UserMock.request.name })
           .expect(HttpStatus.OK);
-        validateSuccess(response.body);
+        validateSuccessBody(response.body);
       });
     });
 
@@ -226,7 +226,7 @@ describe('AppController (e2e)', () => {
         await userModel.deleteMany({});
 
         const response = await request
-          .put(`/users/${savedUser._id}`)
+          .put(`/users/${savedUser.id}`)
           .send({ name: UserMock.request.name })
           .expect(HttpStatus.NOT_FOUND);
         validateNotFoundBody(
@@ -250,7 +250,7 @@ describe('AppController (e2e)', () => {
 
       it('it should return BadRequestException for invalid name', async () => {
         const response = await request
-          .put(`/users/${savedUser._id}`)
+          .put(`/users/${savedUser.id}`)
           .send({ name: ' 1nv4l1d  n4m3 ' })
           .expect(HttpStatus.BAD_REQUEST);
 
@@ -261,7 +261,7 @@ describe('AppController (e2e)', () => {
 
       it('it should return BadRequestException for invalid email', async () => {
         const response = await request
-          .put(`/users/${savedUser._id}`)
+          .put(`/users/${savedUser.id}`)
           .send({ email: 'invalid' })
           .expect(HttpStatus.BAD_REQUEST);
 
@@ -270,7 +270,7 @@ describe('AppController (e2e)', () => {
 
       it('it should return BadRequestException for send password', async () => {
         const response = await request
-          .put(`/users/${savedUser._id}`)
+          .put(`/users/${savedUser.id}`)
           .send({ password: 'n3wp4ssw0rd' })
           .expect(HttpStatus.BAD_REQUEST);
 
@@ -281,7 +281,7 @@ describe('AppController (e2e)', () => {
 
       it('it should return BadRequestException for invalid city', async () => {
         const response = await request
-          .put(`/users/${savedUser._id}`)
+          .put(`/users/${savedUser.id}`)
           .send({ city: '  1n@v4l1d C1ty12321 ' })
           .expect(HttpStatus.BAD_REQUEST);
 
@@ -292,7 +292,7 @@ describe('AppController (e2e)', () => {
 
       it('it should return BadRequestException for invalid state', async () => {
         const response = await request
-          .put(`/users/${savedUser._id}`)
+          .put(`/users/${savedUser.id}`)
           .send({ state: '  1n@v4l1d St4t3 ' })
           .expect(HttpStatus.BAD_REQUEST);
 
@@ -303,7 +303,7 @@ describe('AppController (e2e)', () => {
 
       it('it should return BadRequestException for invalid phone', async () => {
         const response = await request
-          .put(`/users/${savedUser._id}`)
+          .put(`/users/${savedUser.id}`)
           .send({ phone: '83999988123asd88888577' })
           .expect(HttpStatus.BAD_REQUEST);
 
@@ -318,7 +318,7 @@ describe('AppController (e2e)', () => {
     describe('when delete a user by id is successful', () => {
       it('should return nothing', async () => {
         const response = await request
-          .delete(`/users/${savedUser._id}`)
+          .delete(`/users/${savedUser.id}`)
           .expect(HttpStatus.NO_CONTENT);
         expect(response.body).toMatchObject({});
       });
@@ -327,7 +327,7 @@ describe('AppController (e2e)', () => {
     describe('when the user is not founded on database', () => {
       it('should return NotFoundException', async () => {
         const response = await request
-          .delete(`/users/${savedUser._id}`)
+          .delete(`/users/${savedUser.id}`)
           .expect(HttpStatus.NOT_FOUND);
 
         validateNotFoundBody(
@@ -362,7 +362,7 @@ describe('AppController (e2e)', () => {
       describe(`when changing a user's password succsfully`, () => {
         it(`should change user's password`, async () => {
           const response = await request
-            .patch(`/users/${savedUser._id}/password`)
+            .patch(`/users/${savedUser.id}/password`)
             .send({
               current_password: currentPassword,
               new_password: newPassword,
@@ -375,7 +375,7 @@ describe('AppController (e2e)', () => {
       describe(`when changing a user's password with incorrect current password`, () => {
         it('should return forbidden exception', async () => {
           const response = await request
-            .patch(`/users/${savedUser._id}/password`)
+            .patch(`/users/${savedUser.id}/password`)
             .send({
               current_password: currentPassword,
               new_password: newPassword,
@@ -392,7 +392,7 @@ describe('AppController (e2e)', () => {
         it('should return not found exception', async () => {
           await userModel.deleteMany({});
           const response = await request
-            .patch(`/users/${savedUser._id}/password`)
+            .patch(`/users/${savedUser.id}/password`)
             .send({
               current_password: currentPassword,
               new_password: newPassword,
@@ -408,8 +408,8 @@ describe('AppController (e2e)', () => {
     });
   });
 
-  const validateSuccess = (body: any) => {
-    expect(body).toHaveProperty('_id');
+  const validateSuccessBody = (body: any) => {
+    expect(body).toHaveProperty('id');
     expect(body).toHaveProperty('name', UserMock.request.name);
     expect(body).toHaveProperty('email', UserMock.request.email);
     expect(body).not.toHaveProperty('password');

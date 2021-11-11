@@ -14,7 +14,7 @@ export class AnnouncementService {
     private readonly _repository: AnnouncementRepository,
     private readonly _imageRepository: ImageRepository,
     private readonly _userRepository: UserRepository,
-  ) { }
+  ) {}
 
   async create(item: CreateAnnouncementDTO): Promise<Announcement> {
     // 1. validar se o owner existe
@@ -49,7 +49,10 @@ export class AnnouncementService {
   }
 
   async findById(_id: string, user_id: string): Promise<Announcement> {
-    const announcement = await this._repository.findOne({ _id, owner: user_id });
+    const announcement = await this._repository.findOne({
+      _id,
+      owner: user_id,
+    });
 
     if (!announcement) {
       throw new NotFoundException('Announcement not found or already removed.');
@@ -58,9 +61,15 @@ export class AnnouncementService {
     return announcement;
   }
 
-  async update(_id: string, body: UpdateAnnouncementDto): Promise<Announcement> {
+  async update(
+    _id: string,
+    body: UpdateAnnouncementDto,
+  ): Promise<Announcement> {
     //1. atualizar as imagens -> fazer no controller de imagens ->
-    const announcement = await this._repository.updateOne({ _id, owner: body.owner }, body);
+    const announcement = await this._repository.updateOne(
+      { _id, owner: body.owner },
+      body,
+    );
 
     if (!announcement) {
       throw new NotFoundException('Announcement not found or already removed.');
@@ -72,17 +81,19 @@ export class AnnouncementService {
   async delete(_id: string, user_id: string): Promise<void> {
     //1. Ao deletar um anuncio, também devem se deletados:
     //1.1 as imagens relacionadas a ele
-    const announcement = await this._repository.deleteOne({ _id, owner: user_id })
+    const announcement = await this._repository.deleteOne({
+      _id,
+      owner: user_id,
+    });
 
     if (!announcement) {
       throw new NotFoundException('Announcement not found or already removed.');
     }
 
-    const images = await this._imageRepository.deleteMany({
-      $or: announcement.images.map(
-        (imageId: any) => {
-          return { _id: imageId }
-        })
+    await this._imageRepository.deleteMany({
+      $or: announcement.images.map((imageId: any) => {
+        return { _id: imageId };
+      }),
     });
   }
 }
