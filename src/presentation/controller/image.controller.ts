@@ -13,15 +13,14 @@ export class ImageController {
     @Param() param: FindImageByNameDTO,
     @Res() res: Response,
   ) {
-    console.log('name', param.name);
     const result = await this._service.findByName(param.name);
-    console.log('name reuslt', result.originalname);
     const readStream = new stream.PassThrough();
     res.set(
       'Content-Disposition',
       `attachment; filename=${result.originalname}`,
     );
     res.set('Content-Type', result.mimetype);
+    res.emit
     readStream.pipe(res);
     readStream.end(result.buffer);
   }
