@@ -10,9 +10,9 @@ import {
   ValidateIf,
 } from 'class-validator';
 import { AnnouncementTypes } from '../enum/announcement.enum';
-import { IsAlphaWithSpace } from '../validator/is.alpha.with.space';
-import { IsValidLocalization } from '../validator/is.valid.localization';
-import { IsValidText } from '../validator/is.valid.text';
+import { IsAlphaWithSpace } from '../validator/is.alpha.with.space.validator';
+import { IsValidLocalization } from '../validator/is.valid.localization.validator';
+import { IsValidText } from '../validator/is.valid.text.validator';
 import { UserParamByIdDTO } from './user.dto';
 
 export class CreateAnnouncementDTO {

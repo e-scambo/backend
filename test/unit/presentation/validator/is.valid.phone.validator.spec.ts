@@ -1,24 +1,24 @@
 import { ValidationArguments } from 'class-validator';
-import { IsAlphaWithSpaceConstraint } from '../../../../../src/presentation/validator/is.alpha.with.space';
+import { IsValidPhoneConstraint } from '../../../../src/presentation/validator/is.valid.phone.validator';
 
-describe('IsAlphaWithSpaceConstraint', () => {
-  let validator: IsAlphaWithSpaceConstraint;
+describe('IsValidPhoneConstraint', () => {
+  let validator: IsValidPhoneConstraint;
 
   beforeAll(() => {
-    validator = new IsAlphaWithSpaceConstraint();
+    validator = new IsValidPhoneConstraint();
   });
 
   describe('validate()', () => {
     describe('when validate is successful', () => {
       it('should return true', () => {
-        const result = validator.validate('Hello API');
+        const result = validator.validate('(88) 98888-8888');
         expect(result).toEqual(true);
       });
     });
 
     describe('when validate fails', () => {
       it('should return false', () => {
-        const result = validator.validate('H3ll0 4P1');
+        const result = validator.validate('88988888888');
         expect(result).toEqual(false);
       });
     });
@@ -29,9 +29,10 @@ describe('IsAlphaWithSpaceConstraint', () => {
       const result = validator.defaultMessage({
         property: 'key',
       } as ValidationArguments);
-      expect(result).toBe(
-        'key must contains letters and a single space between words',
-      );
+      const expectMessage =
+        'key must follow the pattern (XX) 9XXXX-XXXX or (XX) XXXX-XXXX ' +
+        'and the ddd must be betwween 11 and 99';
+      expect(result).toBe(expectMessage);
     });
   });
 });

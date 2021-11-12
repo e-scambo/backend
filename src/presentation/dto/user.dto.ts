@@ -9,9 +9,9 @@ import {
   MinLength,
   ValidateIf,
 } from 'class-validator';
-import { IsAlphaWithSpace } from '../validator/is.alpha.with.space';
-import { IsValidPassword } from '../validator/is.valid.password';
-import { IsValidPhone } from '../validator/is.valid.phone';
+import { IsAlphaWithSpace } from '../validator/is.alpha.with.space.validator';
+import { IsValidPassword } from '../validator/is.valid.password.validator';
+import { IsValidPhone } from '../validator/is.valid.phone.validator';
 
 export class CreateUserDTO {
   @IsDefined()
