@@ -9,7 +9,7 @@ export class AnnouncementMock {
       images: [ImageMock.request],
       localization: 'Test Platform',
       category: 'Test',
-      type: 'Service',
+      type: 'service',
       description: 'This is a mock from test',
       title: 'Mock Test',
       usage_time: undefined,

@@ -150,7 +150,7 @@ describe('UserController (e2e)', () => {
         const response = await request
           .get(`/users/${savedUser.id}`)
           .expect(HttpStatus.OK);
-          
+
         validateSuccessBody(response.body);
       });
     });
