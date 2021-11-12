@@ -2,21 +2,24 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Test } from '@nestjs/testing';
-import { UserService } from '../../src/business/service/user.service';
+import { ImageService } from '../../src/business/service/image.service';
 import { AllExceptionsFilter } from '../../src/config/filter/exception.filter';
-import { UserRepository } from '../../src/infrastructure/repository/user.repository';
-import { User, UserSchema } from '../../src/infrastructure/schema/user.schema';
-import { UserController } from '../../src/presentation/controller/user.controller';
+import { ImageRepository } from '../../src/infrastructure/repository/image.repository';
+import {
+  Image,
+  ImageSchema,
+} from '../../src/infrastructure/schema/image.schema';
+import { ImageController } from '../../src/presentation/controller/image.controller';
 
 export async function bootstrapTest(): Promise<INestApplication> {
   const moduleFixture = await Test.createTestingModule({
     imports: [
       ConfigModule.forRoot(),
       MongooseModule.forRoot(process.env.TEST_DATABASE_URL),
-      MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+      MongooseModule.forFeature([{ name: Image.name, schema: ImageSchema }]),
     ],
-    controllers: [UserController],
-    providers: [UserService, UserRepository],
+    controllers: [ImageController],
+    providers: [ImageService, ImageRepository],
   }).compile();
 
   const app = moduleFixture.createNestApplication();

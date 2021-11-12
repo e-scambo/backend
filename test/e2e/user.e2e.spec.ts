@@ -150,6 +150,7 @@ describe('UserController (e2e)', () => {
         const response = await request
           .get(`/users/${savedUser.id}`)
           .expect(HttpStatus.OK);
+          
         validateSuccessBody(response.body);
       });
     });
@@ -167,7 +168,7 @@ describe('UserController (e2e)', () => {
       });
     });
 
-    describe('when there area validation errors', () => {
+    describe('when there are validation errors', () => {
       it('should return BadRequestException for invalid id', async () => {
         const response = await request
           .get('/users/123')
