@@ -42,6 +42,6 @@ export const AnnouncementPopulate = [
   },
   {
     path: 'images',
-    select: { _id: 0, created_at: 0, updated_at: 0 },
+    select: { _id: 0, created_at: 0, updated_at: 0, buffer: 0 },
   },
 ];
