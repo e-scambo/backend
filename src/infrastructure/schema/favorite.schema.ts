@@ -20,11 +20,11 @@ export const FavoriteSchema = SchemaFactory.createForClass(Favorite);
 export const FavoritePopulate = [
   {
     path: 'owner',
-    select: { _id: 0, password: 0, created_at: 0, updated_at: 0 },
+    select: { password: 0, created_at: 0, updated_at: 0 },
   },
   {
     path: 'announcement',
-    select: { _id: 0, created_at: 0, updated_at: 0 },
+    select: { created_at: 0, updated_at: 0 },
     populate: AnnouncementPopulate,
   },
 ];
