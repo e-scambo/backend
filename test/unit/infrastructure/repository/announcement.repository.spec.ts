@@ -1,11 +1,10 @@
 import { mock } from 'sinon';
-import { BaseRepository } from '../../../../src/infrastructure/repository/base/repository.base';
 import { AnnouncementRepository } from '../../../../src/infrastructure/repository/announcement.repository';
-import { SchemaMock } from '../../../mock/schema.mock';
+import { BaseRepository } from '../../../../src/infrastructure/repository/base/repository.base';
 import { AnnouncementMock } from '../../../mock/announcement.mock';
-import { QueryMock } from '../../../mock/query.mock';
 import { DatabaseMock } from '../../../mock/database.mock';
-import { Announcement } from '../../../../src/infrastructure/schema/announcement.schema';
+import { QueryMock } from '../../../mock/query.mock';
+import { SchemaMock } from '../../../mock/schema.mock';
 
 describe('AnnouncementRepository', () => {
   let model: any;
