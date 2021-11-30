@@ -1,5 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from '../../infrastructure/repository/user.repository';
+import { AuthDTO } from '../../presentation/dto/auth.dto';
 import { PasswordUtil } from '../util/password.util';
 import { TokenUtil } from '../util/token.util';
 
@@ -7,7 +8,7 @@ import { TokenUtil } from '../util/token.util';
 export class AuthService {
   constructor(private readonly _repository: UserRepository) {}
 
-  async auth(credentials: any): Promise<string> {
+  async auth(credentials: AuthDTO): Promise<string> {
     const user = await this._repository.findOne({ email: credentials.email });
     if (
       !user ||
