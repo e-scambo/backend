@@ -15,19 +15,25 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { MongoQuery, MongoQueryModel } from 'nest-mongo-query-parser';
 import { AnnouncementService } from '../../business/service/announcement.service';
 import { AnnouncementInterceptor } from '../../config/interceptor/announcement.interceptor';
-import { CreateAnnouncementDTO, FindAnnouncementDto, UpdateAnnouncementDto } from '../dto/announcement.dto';
+import {
+  CreateAnnouncementDTO,
+  FindAnnouncementDto,
+  UpdateAnnouncementDto,
+} from '../dto/announcement.dto';
 import { UserParamByIdDTO } from '../dto/user.dto';
 import { ImageEnum } from '../enum/image.enum';
+import { IsValidImageMimetypeValidator } from '../validator/is.valid.image.mimetype.validator';
 
 @Controller('users/:user_id/announcements')
 @UseInterceptors(AnnouncementInterceptor)
 export class UserAnnouncementController {
-  constructor(private readonly _service: AnnouncementService) { }
+  constructor(private readonly _service: AnnouncementService) {}
 
   @Post()
   @UseInterceptors(
     FilesInterceptor('images', ImageEnum.MAX_IMAGE_QUANTITY, {
-      limits: { fileSize: ImageEnum.MAX_FILE_SIZE },
+      limits: { fileSize: ImageEnum.MAX_FILE_SIZE_IN_BYTES },
+      fileFilter: IsValidImageMimetypeValidator.validate,
     }),
   )
   async create(
@@ -55,11 +61,13 @@ export class UserAnnouncementController {
   }
 
   @Put(':announcement_id')
-  async updateAnnouncement(@Param() param: FindAnnouncementDto,
-    @Body() body: UpdateAnnouncementDto): Promise<object> {
-      body.owner = param.user_id
-      return this._service.update(param.announcement_id, body)
-    }
+  async updateAnnouncement(
+    @Param() param: FindAnnouncementDto,
+    @Body() body: UpdateAnnouncementDto,
+  ): Promise<object> {
+    body.owner = param.user_id;
+    return this._service.update(param.announcement_id, body);
+  }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':announcement_id')

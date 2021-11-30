@@ -20,6 +20,7 @@ export class ImageController {
       `attachment; filename=${result.originalname}`,
     );
     res.set('Content-Type', result.mimetype);
+    res.emit
     readStream.pipe(res);
     readStream.end(result.buffer);
   }

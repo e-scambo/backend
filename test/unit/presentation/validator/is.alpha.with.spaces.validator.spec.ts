@@ -1,24 +1,24 @@
 import { ValidationArguments } from 'class-validator';
-import { IsValidPasswordConstraint } from '../../../../../src/presentation/validator/is.valid.password';
+import { IsAlphaWithSpaceConstraint } from '../../../../src/presentation/validator/is.alpha.with.space.validator';
 
-describe('IsValidPasswordConstraint', () => {
-  let validator: IsValidPasswordConstraint;
+describe('IsAlphaWithSpaceConstraint', () => {
+  let validator: IsAlphaWithSpaceConstraint;
 
   beforeAll(() => {
-    validator = new IsValidPasswordConstraint();
+    validator = new IsAlphaWithSpaceConstraint();
   });
 
   describe('validate()', () => {
     describe('when validate is successful', () => {
       it('should return true', () => {
-        const result = validator.validate('pass*123');
+        const result = validator.validate('Hello API');
         expect(result).toEqual(true);
       });
     });
 
     describe('when validate fails', () => {
       it('should return false', () => {
-        const result = validator.validate('`p@@SS`%%<p>w oord</p>');
+        const result = validator.validate('H3ll0 4P1');
         expect(result).toEqual(false);
       });
     });
@@ -30,7 +30,7 @@ describe('IsValidPasswordConstraint', () => {
         property: 'key',
       } as ValidationArguments);
       expect(result).toBe(
-        'key must contains letters, numbers and the special characters: !@#$%&*',
+        'key must contains letters and a single space between words',
       );
     });
   });

@@ -5,14 +5,14 @@ import { MongoQueryModel } from 'nest-mongo-query-parser';
 import {
   Announcement,
   AnnouncementDocument,
-  AnnouncementPopulate
+  AnnouncementPopulate,
 } from '../schema/announcement.schema';
 import { BaseRepository } from './base/repository.base';
 
 @Injectable()
 export class AnnouncementRepository extends BaseRepository<
-AnnouncementDocument,
-Announcement
+  AnnouncementDocument,
+  Announcement
 > {
   constructor(
     @InjectModel(Announcement.name)
@@ -32,15 +32,19 @@ Announcement
       .exec();
   }
 
-  async findOne(filter: FilterQuery<AnnouncementDocument>): Promise<AnnouncementDocument> {
-    return this._model.findOne(filter)
-      .populate(AnnouncementPopulate)
-      .exec();
+  async findOne(
+    filter: FilterQuery<AnnouncementDocument>,
+  ): Promise<AnnouncementDocument> {
+    return this._model.findOne(filter).populate(AnnouncementPopulate).exec();
   }
 
-  async updateOne(filter: FilterQuery<AnnouncementDocument>, body: UpdateQuery<AnnouncementDocument>): Promise<AnnouncementDocument> {
-    return this._model.findOneAndUpdate(filter, body, { new: true })
+  async updateOne(
+    filter: FilterQuery<AnnouncementDocument>,
+    body: Announcement,
+  ): Promise<AnnouncementDocument> {
+    return this._model
+      .findOneAndUpdate(filter, body, { new: true })
       .populate(AnnouncementPopulate)
-      .exec()
+      .exec();
   }
 }

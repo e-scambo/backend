@@ -44,7 +44,7 @@ describe('BaseRepository (UserRepository extends)', () => {
   describe('find()', () => {
     describe('when find is successful', () => {
       it('should return at least one result', async () => {
-        model.find = jest.fn().mockResolvedValueOnce(response)
+        model.find = jest.fn().mockResolvedValueOnce(response);
 
         const result = await repository.find(request);
         expect(result).toMatchObject(response);
@@ -64,7 +64,7 @@ describe('BaseRepository (UserRepository extends)', () => {
   describe('findOne()', () => {
     describe('when findOne is successful', () => {
       it('should return one result', async () => {
-        model.findOne = jest.fn().mockResolvedValueOnce(response)
+        model.findOne = jest.fn().mockResolvedValueOnce(response);
 
         const result = await repository.findOne(request);
         expect(result).toMatchObject(response);
@@ -73,7 +73,7 @@ describe('BaseRepository (UserRepository extends)', () => {
 
     describe(`when findOne doesn't find anything`, () => {
       it('should return null', async () => {
-        model.findOne = jest.fn().mockResolvedValueOnce(null)
+        model.findOne = jest.fn().mockResolvedValueOnce(null);
 
         const result = await repository.findOne(request);
         expect(result).toBeNull();
@@ -84,8 +84,8 @@ describe('BaseRepository (UserRepository extends)', () => {
   describe('updateOne()', () => {
     describe('when updateOne is successful', () => {
       it('should return the new updated object', async () => {
-        model.findOneAndUpdate = jest.fn().mockResolvedValueOnce(response)
-        const _id = request.user_id
+        model.findOneAndUpdate = jest.fn().mockResolvedValueOnce(response);
+        const _id = request.user_id;
 
         const result = await repository.updateOne(_id, request);
         expect(result).toMatchObject(response);
@@ -94,8 +94,8 @@ describe('BaseRepository (UserRepository extends)', () => {
 
     describe(`when updateOne isn't successfull`, () => {
       it('should return null', async () => {
-        model.findOneAndUpdate = jest.fn().mockResolvedValueOnce(null)
-        const _id = request.user_id
+        model.findOneAndUpdate = jest.fn().mockResolvedValueOnce(null);
+        const _id = request.user_id;
 
         const result = await repository.updateOne(_id, request);
         expect(result).toBeNull();
@@ -106,8 +106,8 @@ describe('BaseRepository (UserRepository extends)', () => {
   describe('delete()', () => {
     describe('when delete is successful', () => {
       it('should return nothing', async () => {
-        model.findOneAndDelete = jest.fn().mockResolvedValueOnce(null)
-        const _id = request.user_id
+        model.findOneAndDelete = jest.fn().mockResolvedValueOnce(null);
+        const _id = request.user_id;
 
         const result = await repository.deleteOne(_id);
         expect(result).toBeNull();
@@ -116,10 +116,42 @@ describe('BaseRepository (UserRepository extends)', () => {
 
     describe(`when delete isn't successfull`, () => {
       it('should throw an error', async () => {
-        model.findOneAndDelete = jest.fn().mockResolvedValueOnce(databaseError)
+        model.findOneAndDelete = jest.fn().mockResolvedValueOnce(databaseError);
 
         try {
           await repository.deleteOne(request);
+        } catch (err) {
+          expect(err).toMatchObject(databaseError);
+        }
+      });
+    });
+  });
+
+  describe('checkExists()', () => {
+    describe('when checkExists is successful', () => {
+      it('should return true', async () => {
+        model.findOne = jest.fn().mockResolvedValueOnce(response);
+
+        const result = await repository.checkExists(request);
+        expect(result).toEqual(true);
+      });
+    });
+
+    describe('when document is not founded', () => {
+      it('should return false', async () => {
+        model.findOne = jest.fn().mockResolvedValueOnce(null);
+
+        const result = await repository.checkExists(request);
+        expect(result).toEqual(false);
+      });
+    });
+
+    describe(`when findOne doesn't find anything`, () => {
+      it('should return null', async () => {
+        model.findOne = jest.fn().mockResolvedValueOnce(databaseError);
+
+        try {
+          await repository.checkExists(request);
         } catch (err) {
           expect(err).toMatchObject(databaseError);
         }

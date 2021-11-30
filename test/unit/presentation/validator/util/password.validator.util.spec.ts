@@ -1,4 +1,4 @@
-import { PasswordValidatorUtil } from '../../../../../../src/presentation/validator/util/password.validator.util';
+import { PasswordValidatorUtil } from '../../../../../src/presentation/validator/util/password.validator.util';
 
 describe('PasswordValidatorUtil', () => {
   describe('isValidPassword()', () => {
