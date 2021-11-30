@@ -5,12 +5,14 @@ import { Test } from '@nestjs/testing';
 import { AnnouncementService } from '../../src/business/service/announcement.service';
 import { AllExceptionsFilter } from '../../src/config/filter/exception.filter';
 import { AnnouncementRepository } from '../../src/infrastructure/repository/announcement.repository';
+import { FavoriteRepository } from '../../src/infrastructure/repository/favorite.repository';
 import { ImageRepository } from '../../src/infrastructure/repository/image.repository';
 import { UserRepository } from '../../src/infrastructure/repository/user.repository';
 import {
   Announcement,
   AnnouncementSchema,
 } from '../../src/infrastructure/schema/announcement.schema';
+import { Favorite, FavoriteSchema } from '../../src/infrastructure/schema/favorite.schema';
 import {
   Image,
   ImageSchema,
@@ -27,6 +29,7 @@ export async function bootstrapTest(): Promise<INestApplication> {
         { name: Announcement.name, schema: AnnouncementSchema },
         { name: Image.name, schema: ImageSchema },
         { name: User.name, schema: UserSchema },
+        { name: Favorite.name, schema: FavoriteSchema },
       ]),
     ],
     controllers: [UserAnnouncementController],
@@ -35,6 +38,7 @@ export async function bootstrapTest(): Promise<INestApplication> {
       AnnouncementRepository,
       ImageRepository,
       UserRepository,
+      FavoriteRepository
     ],
   }).compile();
 
