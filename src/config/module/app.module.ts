@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from '../../presentation/controller/app.controller';
 import { AnnouncementModule } from './announcement.module';
+import { AuthModule } from './auth.module';
 import { FavoriteModule } from './favorite.module';
 import { ImageModule } from './image.module';
 import { UserModule } from './user.module';
@@ -15,6 +16,7 @@ import { UserModule } from './user.module';
       retryAttempts: 3,
     }),
     AnnouncementModule,
+    AuthModule,
     FavoriteModule,
     ImageModule,
     UserModule,
