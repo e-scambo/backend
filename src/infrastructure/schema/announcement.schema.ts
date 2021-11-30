@@ -38,10 +38,10 @@ export const AnnouncementSchema = SchemaFactory.createForClass(Announcement);
 export const AnnouncementPopulate = [
   {
     path: 'owner',
-    select: { _id: 0, password: 0, created_at: 0, updated_at: 0 },
+    select: { password: 0, created_at: 0, updated_at: 0 },
   },
   {
     path: 'images',
-    select: { _id: 0, created_at: 0, updated_at: 0 },
+    select: { _id: 0, created_at: 0, updated_at: 0, buffer: 0 },
   },
 ];
