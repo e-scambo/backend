@@ -5,14 +5,3 @@ export class FindImageByNameDTO {
   @IsValidImageName()
   name: string;
 }
-
-export class DeleteImageDTO {
-  @IsMongoId()
-  image_id: string;
-
-  @IsMongoId()
-  announcement_id: string;
-
-  @IsMongoId()
-  user_id: string;
-}

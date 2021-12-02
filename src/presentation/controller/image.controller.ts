@@ -1,8 +1,8 @@
-import { Controller, Delete, Get, HttpCode, HttpStatus, Param, Res } from '@nestjs/common';
+import { Controller, Get, Param, Res } from '@nestjs/common';
 import { Response } from 'express';
+import * as stream from 'stream';
 import { ImageService } from '../../business/service/image.service';
 import { FindImageByNameDTO } from '../dto/image.dto';
-import * as stream from 'stream';
 
 @Controller('images')
 export class ImageController {
@@ -23,15 +23,5 @@ export class ImageController {
     res.emit
     readStream.pipe(res);
     readStream.end(result.buffer);
-  }
-
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @Delete('users/:user_id/announcements/:announcement_id/images/:name')
-  async deleteImage(
-    @Param('user_id') user: string,
-    @Param('announcement_id') announcement: string,
-    @Param('name') originalname: string,
-  ) {
-    return await this._service.deleteImage(user, announcement, originalname);
   }
 }

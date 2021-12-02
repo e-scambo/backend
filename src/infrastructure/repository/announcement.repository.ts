@@ -40,21 +40,11 @@ export class AnnouncementRepository extends BaseRepository<
 
   async updateOne(
     filter: FilterQuery<AnnouncementDocument>,
-    body: Announcement,
+    body: UpdateQuery<AnnouncementDocument>,
   ): Promise<AnnouncementDocument> {
     return this._model
       .findOneAndUpdate(filter, body, { new: true })
       .populate(AnnouncementPopulate)
       .exec();
-  }
-
-  async removeImage(
-    filter: FilterQuery<AnnouncementDocument>,
-    updateQuery: UpdateQuery<AnnouncementDocument>
-  ): Promise<AnnouncementDocument> {
-    return this._model
-    .findOneAndUpdate(filter, updateQuery, { new: true})
-    .populate(AnnouncementPopulate)
-    .exec();
   }
 }

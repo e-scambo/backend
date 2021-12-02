@@ -17,7 +17,7 @@ export class IsValidImageNameConstraint
 
   defaultMessage?(args?: ValidationArguments): string {
     return (
-      `${args.property} must be like: IMG_[dateTime]_[objectId].[jpg,jpeg,png]`
+      `${args.property} must be like: IMG_[dateTime]_[HexHash]_[objectId].[jpg,jpeg,png]`
     );
   }
 }
