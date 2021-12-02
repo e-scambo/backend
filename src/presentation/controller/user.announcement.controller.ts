@@ -8,10 +8,11 @@ import {
   Param,
   Post,
   Put,
+  UploadedFile,
   UploadedFiles,
-  UseInterceptors,
+  UseInterceptors
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import {
   ApiBadRequestResponse,
   ApiConsumes,
@@ -23,15 +24,17 @@ import {
   ApiParam,
   ApiProduces,
   ApiQuery,
-  ApiTags,
+  ApiTags
 } from '@nestjs/swagger';
 import { MongoQuery, MongoQueryModel } from 'nest-mongo-query-parser';
 import { AnnouncementService } from '../../business/service/announcement.service';
 import { AnnouncementInterceptor } from '../../config/interceptor/announcement.interceptor';
 import {
+  AnnouncementImageDTO,
   CreateAnnouncementDTO,
+  DeleteAnnouncementImageDTO,
   FindAnnouncementDto,
-  UpdateAnnouncementDto,
+  UpdateAnnouncementDto
 } from '../dto/announcement.dto';
 import { UserParamByIdDTO } from '../dto/user.dto';
 import { ImageEnum } from '../enum/image.enum';
@@ -40,7 +43,7 @@ import { ApiQueryParam } from '../swagger/param/query.param';
 import { UserByIdParam } from '../swagger/param/user.param';
 import {
   BadRequestValidationErrorResponse,
-  InternalServerErrorResponse,
+  InternalServerErrorResponse
 } from '../swagger/response/error.response';
 import {
   AnnouncementNotFoundErrorResponse,
@@ -48,7 +51,7 @@ import {
   DeleteOneAnnouncementResponse,
   FindAnnouncementResponse,
   FindOneAnnouncementResponse,
-  UpdateOneAnnouncementResponse,
+  UpdateOneAnnouncementResponse
 } from '../swagger/response/user.announcement.response';
 import { UserNotFoundErrorResponse } from '../swagger/response/user.response';
 import { IsValidImageMimetypeValidator } from '../validator/is.valid.image.mimetype.validator';
@@ -57,7 +60,7 @@ import { IsValidImageMimetypeValidator } from '../validator/is.valid.image.mimet
 @ApiTags('users.announcements')
 @UseInterceptors(AnnouncementInterceptor)
 export class UserAnnouncementController {
-  constructor(private readonly _service: AnnouncementService) {}
+  constructor(private readonly _service: AnnouncementService) { }
 
   @Post()
   @UseInterceptors(
@@ -133,5 +136,24 @@ export class UserAnnouncementController {
   @ApiInternalServerErrorResponse(InternalServerErrorResponse)
   async deleteAnnouncement(@Param() param: FindAnnouncementDto) {
     return this._service.delete(param.announcement_id, param.user_id);
+  }
+
+  @HttpCode(HttpStatus.CREATED)
+  @Post(":announcement_id/images")
+  @UseInterceptors(
+    FileInterceptor('image', { fileFilter: IsValidImageMimetypeValidator.validate })
+  )
+  async addImage(
+    @Param() param: AnnouncementImageDTO,
+    @UploadedFile() image: Express.Multer.File) {
+    return await this._service.addImage(param.user_id, param.announcement_id, image)
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete(':announcement_id/images/:name')
+  async deleteImage(
+    @Param() param: DeleteAnnouncementImageDTO,
+  ) {
+    return await this._service.deleteImage(param.user_id, param.announcement_id, param.name);
   }
 }

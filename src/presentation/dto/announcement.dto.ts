@@ -12,6 +12,7 @@ import {
 } from 'class-validator';
 import { AnnouncementTypes } from '../enum/announcement.enum';
 import { IsAlphaWithSpace } from '../validator/is.alpha.with.space.validator';
+import { IsValidImageName } from '../validator/is.valid.image.name.validator';
 import { IsValidLocalization } from '../validator/is.valid.localization.validator';
 import { IsValidText } from '../validator/is.valid.text.validator';
 import { UserParamByIdDTO } from './user.dto';
@@ -205,7 +206,24 @@ export class UpdateAnnouncementDto {
   owner: string;
 }
 
-type ImageDTO = {
+export class AnnouncementImageDTO extends UserParamByIdDTO{
+
+  @IsMongoId()
+  announcement_id: string;
+
+}
+
+export class DeleteAnnouncementImageDTO extends UserParamByIdDTO{
+
+  @IsMongoId()
+  announcement_id: string;
+
+  @IsValidImageName()
+  name: string
+
+}
+
+export type ImageDTO = {
   originalname: string;
   buffer: Buffer;
   size: number;
