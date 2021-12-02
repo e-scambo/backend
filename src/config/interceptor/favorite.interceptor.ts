@@ -5,19 +5,19 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { map, Observable } from 'rxjs';
-import { AnnouncementDocument } from '../../infrastructure/schema/announcement.schema';
+import { FavoriteDocument } from '../../infrastructure/schema/favorite.schema';
 
 @Injectable()
-export class AnnouncementInterceptor implements NestInterceptor {
+export class FavoriteInterceptor implements NestInterceptor {
   intercept(
     _: ExecutionContext,
     next: CallHandler<any>,
   ): Observable<any> | Promise<Observable<any>> {
     return next.handle().pipe(
-      map((data: AnnouncementDocument | AnnouncementDocument[]) => {
+      map((data: FavoriteDocument | FavoriteDocument[]) => {
         if (data) {
           if (data instanceof Array) {
-            return data.map((announcement) => announcement.toObject());
+            return data.map((favorite) => favorite.toObject());
           }
           return data.toObject();
         }

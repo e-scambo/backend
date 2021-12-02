@@ -10,14 +10,21 @@ describe('AnnouncementService', () => {
   let repository: any;
   let imageRepository: any;
   let userRepository: any;
+  let favoriteRepository: any;
   let service: AnnouncementService;
 
   beforeAll(() => {
-    [repository, imageRepository, userRepository] = [mock(), mock(), mock()];
+    [repository, imageRepository, userRepository, favoriteRepository] = [
+      mock(),
+      mock(),
+      mock(),
+      mock(),
+    ];
     service = new AnnouncementService(
       repository,
       imageRepository,
       userRepository,
+      favoriteRepository,
     );
   });
 
@@ -246,6 +253,8 @@ describe('AnnouncementService', () => {
           .fn()
           .mockResolvedValueOnce([ImageMock.response]);
 
+        favoriteRepository.deleteMany = jest.fn().mockResolvedValueOnce([]);
+
         const result = await service.delete(
           AnnouncementMock.response._id,
           AnnouncementMock.response.owner,
@@ -295,6 +304,8 @@ describe('AnnouncementService', () => {
         imageRepository.deleteMany = jest
           .fn()
           .mockRejectedValueOnce(DatabaseMock.error);
+
+        favoriteRepository.deleteMany = jest.fn().mockResolvedValueOnce([]);
 
         try {
           await service.delete(

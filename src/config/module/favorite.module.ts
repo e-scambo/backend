@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AnnouncementService } from '../../business/service/announcement.service';
+import { FavoriteService } from '../../business/service/favorite.service';
 import { AnnouncementRepository } from '../../infrastructure/repository/announcement.repository';
 import { FavoriteRepository } from '../../infrastructure/repository/favorite.repository';
-import { ImageRepository } from '../../infrastructure/repository/image.repository';
 import { UserRepository } from '../../infrastructure/repository/user.repository';
 import {
   Announcement,
@@ -13,27 +12,23 @@ import {
   Favorite,
   FavoriteSchema,
 } from '../../infrastructure/schema/favorite.schema';
-import { Image, ImageSchema } from '../../infrastructure/schema/image.schema';
 import { User, UserSchema } from '../../infrastructure/schema/user.schema';
-import { UserAnnouncementController } from '../../presentation/controller/user.announcement.controller';
+import { UserFavoriteController } from '../../presentation/controller/user.favorite.controller';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: Announcement.name, schema: AnnouncementSchema },
-      { name: Image.name, schema: ImageSchema },
-      { name: User.name, schema: UserSchema },
       { name: Favorite.name, schema: FavoriteSchema },
+      { name: User.name, schema: UserSchema },
+      { name: Announcement.name, schema: AnnouncementSchema },
     ]),
   ],
-  controllers: [UserAnnouncementController],
+  controllers: [UserFavoriteController],
   providers: [
-    AnnouncementService,
-    AnnouncementRepository,
-    ImageRepository,
-    UserRepository,
+    FavoriteService,
     FavoriteRepository,
+    UserRepository,
+    AnnouncementRepository,
   ],
-  exports: [AnnouncementRepository]
 })
-export class AnnouncementModule {}
+export class FavoriteModule {}
