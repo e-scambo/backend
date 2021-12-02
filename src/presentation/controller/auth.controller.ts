@@ -8,7 +8,6 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
-  ApiBearerAuth,
   ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiTags,
@@ -18,8 +17,8 @@ import { AuthService } from '../../business/service/auth.service';
 import { AuthInterceptor } from '../../config/interceptor/auth.interceptor';
 import { AuthDTO } from '../dto/auth.dto';
 import {
-  AuthResponse,
-  AuthUnauthorizedResponseError,
+  AuthOkResponse,
+  AuthUnauthorizedErrorResponse,
 } from '../swagger/response/auth.response';
 import {
   BadRequestValidationErrorResponse,
@@ -34,22 +33,10 @@ export class AuthController {
   @Post()
   @UseInterceptors(AuthInterceptor)
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({
-    description: 'Autenticação realizada com sucesso',
-    type: AuthResponse,
-  })
-  @ApiBadRequestResponse({
-    description: 'Houve um erro de validação dos dados submetidos',
-    type: BadRequestValidationErrorResponse,
-  })
-  @ApiUnauthorizedResponse({
-    description: 'As credenciais do usuário estão inválidas',
-    type: AuthUnauthorizedResponseError,
-  })
-  @ApiInternalServerErrorResponse({
-    description: 'Houve um erro interno na aplicação',
-    type: InternalServerErrorResponse,
-  })
+  @ApiOkResponse(AuthOkResponse)
+  @ApiBadRequestResponse(BadRequestValidationErrorResponse)
+  @ApiUnauthorizedResponse(AuthUnauthorizedErrorResponse)
+  @ApiInternalServerErrorResponse(InternalServerErrorResponse)
   async auth(@Body() item: AuthDTO) {
     return this._service.auth(item);
   }

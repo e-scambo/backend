@@ -1,7 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
-import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
+import { ApiResponseProperty } from '@nestjs/swagger';
 
-export class InternalServerErrorResponse {
+class InternalServerError {
   @ApiResponseProperty({
     example: 'An internal error occurred while making the request.',
   })
@@ -13,12 +13,12 @@ export class InternalServerErrorResponse {
   description: string;
 
   @ApiResponseProperty({
-    example: HttpStatus.INTERNAL_SERVER_ERROR
+    example: HttpStatus.INTERNAL_SERVER_ERROR,
   })
-  statusCode: number
+  statusCode: number;
 }
 
-export class BadRequestValidationErrorResponse {
+class BadRequestValidationError {
   @ApiResponseProperty({
     example: ['field should not be undefined'],
   })
@@ -33,4 +33,14 @@ export class BadRequestValidationErrorResponse {
     example: HttpStatus.BAD_REQUEST,
   })
   statusCode: number;
+}
+
+export const BadRequestValidationErrorResponse = {
+  description: 'Houve um erro de validação dos dados submetidos',
+  type: BadRequestValidationError,
+};
+
+export const InternalServerErrorResponse = {
+  description: 'Houve um erro interno na aplicação',
+  type: InternalServerError,
 }
