@@ -1,7 +1,7 @@
 import { Controller, Delete, Get, HttpCode, HttpStatus, Param, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { ImageService } from '../../business/service/image.service';
-import { DeleteImageDTO, FindImageByNameDTO } from '../dto/image.dto';
+import { FindImageByNameDTO } from '../dto/image.dto';
 import * as stream from 'stream';
 
 @Controller('images')

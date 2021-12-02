@@ -27,5 +27,6 @@ import { UserAnnouncementController } from '../../presentation/controller/user.a
     ImageRepository,
     UserRepository,
   ],
+  exports: [AnnouncementRepository]
 })
 export class AnnouncementModule {}

@@ -47,4 +47,14 @@ export class AnnouncementRepository extends BaseRepository<
       .populate(AnnouncementPopulate)
       .exec();
   }
+
+  async removeImage(
+    filter: FilterQuery<AnnouncementDocument>,
+    updateQuery: UpdateQuery<AnnouncementDocument>
+  ): Promise<AnnouncementDocument> {
+    return this._model
+    .findOneAndUpdate(filter, updateQuery, { new: true})
+    .populate(AnnouncementPopulate)
+    .exec();
+  }
 }
