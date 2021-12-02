@@ -12,7 +12,18 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { ApiExcludeController, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiConsumes,
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiParam,
+  ApiProduces,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { MongoQuery, MongoQueryModel } from 'nest-mongo-query-parser';
 import { AnnouncementService } from '../../business/service/announcement.service';
 import { AnnouncementInterceptor } from '../../config/interceptor/announcement.interceptor';
@@ -23,6 +34,17 @@ import {
 } from '../dto/announcement.dto';
 import { UserParamByIdDTO } from '../dto/user.dto';
 import { ImageEnum } from '../enum/image.enum';
+import { ApiQueryParam } from '../swagger/param/query.param';
+import { UserByIdParam } from '../swagger/param/user.param';
+import {
+  BadRequestValidationErrorResponse,
+  InternalServerErrorResponse,
+} from '../swagger/response/error.response';
+import {
+  CreateAnnouncementResponse,
+  FindAnnouncementResponse,
+} from '../swagger/response/user.announcement.response';
+import { UserNotFoundErrorResponse } from '../swagger/response/user.response';
 import { IsValidImageMimetypeValidator } from '../validator/is.valid.image.mimetype.validator';
 
 @Controller('users/:user_id/announcements')
@@ -38,6 +60,13 @@ export class UserAnnouncementController {
       fileFilter: IsValidImageMimetypeValidator.validate,
     }),
   )
+  @ApiParam(UserByIdParam)
+  @ApiConsumes('multipart/form-data')
+  @ApiProduces('application/json')
+  @ApiCreatedResponse(CreateAnnouncementResponse)
+  @ApiBadRequestResponse(BadRequestValidationErrorResponse)
+  @ApiNotFoundResponse(UserNotFoundErrorResponse)
+  @ApiInternalServerErrorResponse(InternalServerErrorResponse)
   async create(
     @Param() param: UserParamByIdDTO,
     @UploadedFiles() images: Express.Multer.File[],
@@ -49,6 +78,9 @@ export class UserAnnouncementController {
   }
 
   @Get()
+  @ApiParam(UserByIdParam)
+  @ApiQuery(ApiQueryParam)
+  @ApiOkResponse(FindAnnouncementResponse)
   async find(
     @Param() param: UserParamByIdDTO,
     @MongoQuery() query: MongoQueryModel,

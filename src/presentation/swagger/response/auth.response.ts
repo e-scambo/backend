@@ -1,16 +1,14 @@
 import { HttpStatus } from '@nestjs/common';
-import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
+import { ApiResponseProperty } from '@nestjs/swagger';
 
-export class AuthResponse {
-  @ApiProperty({
-    readOnly: true,
-    description: 'Token de acesso do usuário',
+class AuthResponse {
+  @ApiResponseProperty({
     example: 'jwt_token',
   })
   access_token: string;
 }
 
-export class AuthUnauthorizedResponseError {
+class AuthUnauthorizedError {
   @ApiResponseProperty({
     example: 'Invalid credentials. Please try again with valid credentials.',
   })
@@ -26,3 +24,13 @@ export class AuthUnauthorizedResponseError {
   })
   error: string;
 }
+
+export const AuthOkResponse = {
+  description: 'Autenticação realizada com sucesso',
+  type: AuthResponse,
+};
+
+export const AuthUnauthorizedErrorResponse = {
+  description: 'As credenciais do usuário estão inválidas',
+  type: AuthUnauthorizedError,
+};

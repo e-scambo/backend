@@ -79,6 +79,11 @@ export class UserNotUniqueResponse {
 export class UserNotFoundResponse {
   @ApiResponseProperty({
     example: 'User not found or already removed.'
+
+
+class UserNotFoundError {
+  @ApiResponseProperty({
+    example: 'User not found or already removed',
   })
   message: string;
 
@@ -109,3 +114,7 @@ export class UserForbiddenResponse {
   })
   error: string;
 }
+export const UserNotFoundErrorResponse = {
+  description: 'Usuário não encontrado ou já foi removido',
+  type: UserNotFoundError,
+};
