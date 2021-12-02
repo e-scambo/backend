@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { ApiResponseProperty } from '@nestjs/swagger';
+import { ApiResponseProperty, getSchemaPath } from '@nestjs/swagger';
 import { ReadOnlyResponse } from './readonly.response';
 
 class AnnouncementResponse extends ReadOnlyResponse {
@@ -115,6 +115,56 @@ class AnnouncementNotFoundError {
   error: string;
 }
 
+class AnnouncementAddImageBadRequestError {
+  @ApiResponseProperty({
+    example: 'Exceeds maximum number of images.',
+  })
+  message: string;
+
+  @ApiResponseProperty({
+    example: HttpStatus.BAD_REQUEST,
+  })
+  statusCode: number;
+
+  @ApiResponseProperty({
+    example: 'Bad Request',
+  })
+  error: string;
+}
+class AnnouncementRemoveImageNotFoundError {
+  @ApiResponseProperty({
+    example: 'Image not found or already removed.',
+  })
+  message: string;
+
+  @ApiResponseProperty({
+    example: HttpStatus.NOT_FOUND,
+  })
+  statusCode: number;
+
+  @ApiResponseProperty({
+    example: 'Not Found',
+  })
+  error: string;
+}
+
+class AnnouncementRemoveImageUnauthorizedError {
+  @ApiResponseProperty({
+    example: `This user can't delete this image`,
+  })
+  message: string;
+
+  @ApiResponseProperty({
+    example: HttpStatus.UNAUTHORIZED,
+  })
+  statusCode: number;
+
+  @ApiResponseProperty({
+    example: 'Unauthorized',
+  })
+  error: string;
+}
+
 export const CreateAnnouncementResponse = {
   type: AnnouncementResponse,
   description: 'Anúncio criado com sucesso.',
@@ -143,4 +193,26 @@ export const DeleteOneAnnouncementResponse = {
 export const AnnouncementNotFoundErrorResponse = {
   description: 'Anúncio não encontrado ou já foi removido',
   type: AnnouncementNotFoundError,
+};
+
+export const AnnouncementAddImageBadRequestErrorResponse = {
+  description: `Houve um erro com os dados submetidos.
+  
+  1. Erro de validação dos dados submetidos
+  2. O anúncio já possui a quantidade máxima de imagens permitida
+  `,
+  type: AnnouncementAddImageBadRequestError,
+};
+
+export const AnnouncementRemoveImageNotFoundErrorResponse = {
+  description: `Recurso não encontrado ou já foi removido.
+  
+  1. Anúncio não encontrado ou já foi removido.
+  2. Imagem não encontrada ou já foi removida.`,
+  type: AnnouncementRemoveImageNotFoundError,
+};
+
+export const AnnouncementRemoveImageUnauthorizedErrorResponse = {
+  description: `O usuário não pode remover a imagem`,
+  type: AnnouncementRemoveImageUnauthorizedError,
 };

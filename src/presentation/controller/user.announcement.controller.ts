@@ -10,11 +10,12 @@ import {
   Put,
   UploadedFile,
   UploadedFiles,
-  UseInterceptors
+  UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import {
   ApiBadRequestResponse,
+  ApiBody,
   ApiConsumes,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
@@ -24,7 +25,8 @@ import {
   ApiParam,
   ApiProduces,
   ApiQuery,
-  ApiTags
+  ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { MongoQuery, MongoQueryModel } from 'nest-mongo-query-parser';
 import { AnnouncementService } from '../../business/service/announcement.service';
@@ -34,24 +36,29 @@ import {
   CreateAnnouncementDTO,
   DeleteAnnouncementImageDTO,
   FindAnnouncementDto,
-  UpdateAnnouncementDto
+  UpdateAnnouncementDto,
 } from '../dto/announcement.dto';
 import { UserParamByIdDTO } from '../dto/user.dto';
 import { ImageEnum } from '../enum/image.enum';
 import { AnnouncementByIdParam } from '../swagger/param/announcement.param';
+import { ImageByNameParam } from '../swagger/param/image.param';
 import { ApiQueryParam } from '../swagger/param/query.param';
 import { UserByIdParam } from '../swagger/param/user.param';
+import { AddImageToAnnouncementRequest } from '../swagger/request/user.announcement.request';
 import {
   BadRequestValidationErrorResponse,
-  InternalServerErrorResponse
+  InternalServerErrorResponse,
 } from '../swagger/response/error.response';
 import {
+  AnnouncementAddImageBadRequestErrorResponse,
   AnnouncementNotFoundErrorResponse,
+  AnnouncementRemoveImageNotFoundErrorResponse,
+  AnnouncementRemoveImageUnauthorizedErrorResponse,
   CreateAnnouncementResponse,
   DeleteOneAnnouncementResponse,
   FindAnnouncementResponse,
   FindOneAnnouncementResponse,
-  UpdateOneAnnouncementResponse
+  UpdateOneAnnouncementResponse,
 } from '../swagger/response/user.announcement.response';
 import { UserNotFoundErrorResponse } from '../swagger/response/user.response';
 import { IsValidImageMimetypeValidator } from '../validator/is.valid.image.mimetype.validator';
@@ -60,7 +67,7 @@ import { IsValidImageMimetypeValidator } from '../validator/is.valid.image.mimet
 @ApiTags('users.announcements')
 @UseInterceptors(AnnouncementInterceptor)
 export class UserAnnouncementController {
-  constructor(private readonly _service: AnnouncementService) { }
+  constructor(private readonly _service: AnnouncementService) {}
 
   @Post()
   @UseInterceptors(
@@ -139,21 +146,47 @@ export class UserAnnouncementController {
   }
 
   @HttpCode(HttpStatus.CREATED)
-  @Post(":announcement_id/images")
+  @Post(':announcement_id/images')
   @UseInterceptors(
-    FileInterceptor('image', { fileFilter: IsValidImageMimetypeValidator.validate })
+    FileInterceptor('image', {
+      fileFilter: IsValidImageMimetypeValidator.validate,
+    }),
   )
+  @ApiParam(UserByIdParam)
+  @ApiParam(AnnouncementByIdParam)
+  @ApiConsumes('multipart/form-data')
+  @ApiProduces('application/json')
+  @ApiBody(AddImageToAnnouncementRequest)
+  @ApiOkResponse(UpdateOneAnnouncementResponse)
+  @ApiBadRequestResponse(AnnouncementAddImageBadRequestErrorResponse)
+  @ApiNotFoundResponse(AnnouncementNotFoundErrorResponse)
+  @ApiInternalServerErrorResponse(InternalServerErrorResponse)
   async addImage(
     @Param() param: AnnouncementImageDTO,
-    @UploadedFile() image: Express.Multer.File) {
-    return await this._service.addImage(param.user_id, param.announcement_id, image)
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    return await this._service.addImage(
+      param.user_id,
+      param.announcement_id,
+      image,
+    );
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':announcement_id/images/:name')
-  async deleteImage(
-    @Param() param: DeleteAnnouncementImageDTO,
-  ) {
-    return await this._service.deleteImage(param.user_id, param.announcement_id, param.name);
+  @ApiParam(UserByIdParam)
+  @ApiParam(AnnouncementByIdParam)
+  @ApiParam(ImageByNameParam)
+  @ApiOkResponse(UpdateOneAnnouncementResponse)
+  @ApiBadRequestResponse(BadRequestValidationErrorResponse)
+  @ApiNotFoundResponse(AnnouncementRemoveImageNotFoundErrorResponse)
+  @ApiUnauthorizedResponse(AnnouncementRemoveImageUnauthorizedErrorResponse)
+  @ApiInternalServerErrorResponse(InternalServerErrorResponse)
+  async deleteImage(@Param() param: DeleteAnnouncementImageDTO) {
+    return await this._service.deleteImage(
+      param.user_id,
+      param.announcement_id,
+      param.name,
+    );
   }
 }
