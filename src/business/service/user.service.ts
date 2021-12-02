@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -85,7 +86,7 @@ export class UserService {
   private async validateUnique(filter: FilterQuery<UserDocument>) {
     const exists: boolean = await this._repository.checkExists(filter);
     if (exists) {
-      throw new BadRequestException(
+      throw new ConflictException(
         'An user with this email or phone already exists.',
       );
     }
