@@ -1,7 +1,8 @@
 import { HttpStatus } from "@nestjs/common";
 import { ApiProperty, ApiResponseProperty } from "@nestjs/swagger";
+import { ReadOnlyResponse } from "./readonly.response";
 
-export class UserResponse {
+export class UserResponse extends ReadOnlyResponse {
   @ApiProperty({
     readOnly: true,
     description: 'Id único do usuário',
@@ -43,20 +44,6 @@ export class UserResponse {
     example: '(51) 9999-9999',
   })
   phone: string;
-
-  @ApiProperty({
-    readOnly: true,
-    description: 'Data de criação do usuário',
-    example: '2021-12-02T15:14:59.929Z',
-  })
-  created_at: Date;
-
-  @ApiProperty({
-    readOnly: true,
-    description: 'Data da última atualização do usuário',
-    example: '2021-12-02T15:14:59.929Z'
-  })
-  updated_at: Date;
 }
 
 export class UserNotUniqueResponse {
@@ -79,11 +66,6 @@ export class UserNotUniqueResponse {
 export class UserNotFoundResponse {
   @ApiResponseProperty({
     example: 'User not found or already removed.'
-
-
-class UserNotFoundError {
-  @ApiResponseProperty({
-    example: 'User not found or already removed',
   })
   message: string;
 
@@ -114,7 +96,32 @@ export class UserForbiddenResponse {
   })
   error: string;
 }
+
+export const UserOkResponse = {
+  description: 'Usuário encontrado com sucesso.',
+  type: UserResponse
+}
+
+export const UserCreatedResponse = {
+  description: 'Usuário criado com sucesso.',
+  type: UserResponse
+}
+
+export const UserNoContentResponse = {
+      description: 'Senha atualizada com sucesso.',
+};
+
 export const UserNotFoundErrorResponse = {
   description: 'Usuário não encontrado ou já foi removido',
-  type: UserNotFoundError,
+  type: UserNotFoundResponse,
+};
+
+export const UserForbiddenErrorResponse = {
+  description: 'Usuário não tem acesso ao recurso solicitado',
+  type: UserForbiddenResponse,
+};
+
+export const UserConlifctErrorResponse = {
+  description: 'Dados informados já existem no banco',
+  type: UserNotUniqueResponse,
 };

@@ -21,7 +21,7 @@ import {
   UserParamByIdDTO
 } from '../dto/user.dto';
 import { BadRequestValidationErrorResponse, InternalServerErrorResponse } from '../swagger/response/error.response';
-import { UserForbiddenResponse, UserNotFoundResponse, UserNotUniqueResponse, UserResponse } from '../swagger/response/user.response';
+import { UserConlifctErrorResponse, UserCreatedResponse, UserForbiddenErrorResponse, UserNoContentResponse, UserNotFoundErrorResponse, UserNotFoundResponse, UserNotUniqueResponse, UserOkResponse, UserResponse } from '../swagger/response/user.response';
 
 @Controller('users')
 @ApiTags('users')
@@ -32,26 +32,10 @@ export class UserController {
   @Post()
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
-  @ApiCreatedResponse({
-    description: 'Usuário criado com sucesso.',
-    type: UserResponse
-  })
-  @ApiConflictResponse({
-    description: 'Informações já existem no banco.', 
-    type: UserNotUniqueResponse
-  })
-  @ApiBadRequestResponse({
-    description: 'Houve um erro de validação dos dados submetidos.', 
-    type: BadRequestValidationErrorResponse
-  })
-  @ApiNotFoundResponse({
-    description: 'O recurso não foi encontrado no banco.',
-    type: UserNotFoundResponse
-  })
-  @ApiInternalServerErrorResponse({
-    description: 'Houve um erro interno na aplicação',
-    type: InternalServerErrorResponse,
-  })
+  @ApiCreatedResponse(UserCreatedResponse)
+  @ApiConflictResponse(UserConlifctErrorResponse)
+  @ApiBadRequestResponse(BadRequestValidationErrorResponse)
+  @ApiInternalServerErrorResponse(InternalServerErrorResponse)
   async create(@Body() dto: CreateUserDTO): Promise<object> {
     return this._service.create(dto);
   }
@@ -60,23 +44,10 @@ export class UserController {
   @ApiParam({name: 'user_id', description: 'Id do usuário'})
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
-  @ApiOkResponse({
-    description: 'Usuário encontrado com sucesso.',
-    type: UserResponse
-  })
-  @ApiBadRequestResponse({
-    description: 'Houve um erro de validação dos dados submetidos.', 
-    type: BadRequestValidationErrorResponse
-  })
-  @ApiNotFoundResponse({
-    description: 'O recurso não foi encontrado no banco.',
-    type: UserNotFoundResponse
-  })
-  @ApiInternalServerErrorResponse({
-    description: 'Houve um erro interno na aplicação',
-    type: InternalServerErrorResponse,
-  })
-  
+  @ApiOkResponse(UserOkResponse)
+  @ApiNotFoundResponse(UserNotFoundErrorResponse)
+  @ApiBadRequestResponse(BadRequestValidationErrorResponse)
+  @ApiInternalServerErrorResponse(InternalServerErrorResponse)
   async findById(@Param() param: UserParamByIdDTO): Promise<object> {
     return this._service.findById(param.user_id);
   }
@@ -84,27 +55,12 @@ export class UserController {
   @Put(':user_id')
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
-  @ApiParam({name: 'user_id'})
-  @ApiOkResponse({
-    description: 'Usuário atualizado com sucesso.',
-    type: UserResponse
-  })
-  @ApiConflictResponse({
-    description: 'Informações já existem no banco.', 
-    type: UserNotUniqueResponse
-  })
-  @ApiBadRequestResponse({
-    description: 'Houve um erro de validação dos dados submetidos.', 
-    type: BadRequestValidationErrorResponse
-  })
-  @ApiNotFoundResponse({
-    description: 'O recurso não foi encontrado no banco.',
-    type: UserNotFoundResponse
-  })
-  @ApiInternalServerErrorResponse({
-    description: 'Houve um erro interno na aplicação',
-    type: InternalServerErrorResponse,
-  })
+  @ApiParam({name: 'user_id', description: 'Id do usuário'})
+  @ApiOkResponse(UserOkResponse)
+  @ApiNotFoundResponse(UserNotFoundErrorResponse)
+  @ApiConflictResponse(UserConlifctErrorResponse)
+  @ApiBadRequestResponse(BadRequestValidationErrorResponse)
+  @ApiInternalServerErrorResponse(InternalServerErrorResponse)
   async updateById(
     @Param() param: UserParamByIdDTO,
     @Body() dto: UpdateUserDTO,
@@ -117,49 +73,24 @@ export class UserController {
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
   @ApiParam({name: 'user_id'})
-  @ApiNoContentResponse({
-    description: 'Usuário deletado com sucesso.',
-  })
-  @ApiBadRequestResponse({
-    description: 'Houve um erro de validação dos dados submetidos.', 
-    type: BadRequestValidationErrorResponse
-  })
-  @ApiNotFoundResponse({
-    description: 'O recurso não foi encontrado no banco.',
-    type: UserNotFoundResponse
-  })
-  @ApiInternalServerErrorResponse({
-    description: 'Houve um erro interno na aplicação',
-    type: InternalServerErrorResponse,
-  })
+  @ApiNoContentResponse(UserNoContentResponse)
+  @ApiNotFoundResponse(UserNotFoundErrorResponse)
+  @ApiBadRequestResponse(BadRequestValidationErrorResponse)
+  @ApiInternalServerErrorResponse(InternalServerErrorResponse)
   async deleteById(@Param() param: UserParamByIdDTO): Promise<void> {
     return this._service.deleteById(param.user_id);
   }
 
   @Patch('/:user_id/password')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiParam({name: 'user_id'})
+  @ApiParam({name: 'user_id', description: 'Id do usuário'})
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
-  @ApiNoContentResponse({
-    description: 'Senha atualizada com sucesso.',
-  })
-  @ApiBadRequestResponse({
-    description: 'Houve um erro de validação dos dados submetidos.', 
-    type: BadRequestValidationErrorResponse
-  })
-  @ApiForbiddenResponse({
-    description: 'Usuário não obteve permissão para realizar a operação desejada',
-    type: UserForbiddenResponse
-  })
-  @ApiNotFoundResponse({
-    description: 'O recurso não foi encontrado no banco.',
-    type: UserNotFoundResponse
-  })
-  @ApiInternalServerErrorResponse({
-    description: 'Houve um erro interno na aplicação',
-    type: InternalServerErrorResponse,
-  })
+  @ApiNoContentResponse(UserNoContentResponse)
+  @ApiForbiddenResponse(UserForbiddenErrorResponse)
+  @ApiNotFoundResponse(UserNotFoundErrorResponse)
+  @ApiBadRequestResponse(BadRequestValidationErrorResponse)
+  @ApiInternalServerErrorResponse(InternalServerErrorResponse)
   async updatePassword(
     @Param() param: UserParamByIdDTO,
     @Body() dto: UpdatePasswordDTO,
