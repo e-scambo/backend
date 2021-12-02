@@ -131,23 +131,6 @@ class AnnouncementAddImageBadRequestError {
   })
   error: string;
 }
-class AnnouncementRemoveImageNotFoundError {
-  @ApiResponseProperty({
-    example: 'Image not found or already removed.',
-  })
-  message: string;
-
-  @ApiResponseProperty({
-    example: HttpStatus.NOT_FOUND,
-  })
-  statusCode: number;
-
-  @ApiResponseProperty({
-    example: 'Not Found',
-  })
-  error: string;
-}
-
 class AnnouncementRemoveImageUnauthorizedError {
   @ApiResponseProperty({
     example: `This user can't delete this image`,
@@ -209,7 +192,7 @@ export const AnnouncementRemoveImageNotFoundErrorResponse = {
   
   1. Anúncio não encontrado ou já foi removido.
   2. Imagem não encontrada ou já foi removida.`,
-  type: AnnouncementRemoveImageNotFoundError,
+  type: AnnouncementNotFoundError,
 };
 
 export const AnnouncementRemoveImageUnauthorizedErrorResponse = {
