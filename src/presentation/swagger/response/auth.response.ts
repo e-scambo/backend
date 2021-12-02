@@ -1,10 +1,8 @@
 import { HttpStatus } from '@nestjs/common';
-import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
+import { ApiResponseProperty } from '@nestjs/swagger';
 
 export class AuthResponse {
-  @ApiProperty({
-    readOnly: true,
-    description: 'Token de acesso do usuário',
+  @ApiResponseProperty({
     example: 'jwt_token',
   })
   access_token: string;
