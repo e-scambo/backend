@@ -10,7 +10,7 @@ describe('ImageService', () => {
 
   beforeAll(() => {
     repository = mock();
-    service = new ImageService(repository);
+    service = new ImageService(repository, repository);
   });
 
   describe('findByName()', () => {

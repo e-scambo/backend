@@ -8,15 +8,18 @@ import {
   Param,
   Post,
   Put,
+  UploadedFile,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { MongoQuery, MongoQueryModel } from 'nest-mongo-query-parser';
 import { AnnouncementService } from '../../business/service/announcement.service';
 import { AnnouncementInterceptor } from '../../config/interceptor/announcement.interceptor';
 import {
+  AnnouncementImageDTO,
   CreateAnnouncementDTO,
+  DeleteAnnouncementImageDTO,
   FindAnnouncementDto,
   UpdateAnnouncementDto,
 } from '../dto/announcement.dto';
@@ -27,7 +30,7 @@ import { IsValidImageMimetypeValidator } from '../validator/is.valid.image.mimet
 @Controller('users/:user_id/announcements')
 @UseInterceptors(AnnouncementInterceptor)
 export class UserAnnouncementController {
-  constructor(private readonly _service: AnnouncementService) {}
+  constructor(private readonly _service: AnnouncementService) { }
 
   @Post()
   @UseInterceptors(
@@ -73,5 +76,24 @@ export class UserAnnouncementController {
   @Delete(':announcement_id')
   async deleteAnnouncement(@Param() param: FindAnnouncementDto) {
     return this._service.delete(param.announcement_id, param.user_id);
+  }
+
+  @HttpCode(HttpStatus.CREATED)
+  @Post(":announcement_id/images")
+  @UseInterceptors(
+    FileInterceptor('image', { fileFilter: IsValidImageMimetypeValidator.validate })
+  )
+  async addImage(
+    @Param() param: AnnouncementImageDTO,
+    @UploadedFile() image: Express.Multer.File) {
+    return await this._service.addImage(param.user_id, param.announcement_id, image)
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete(':announcement_id/images/:name')
+  async deleteImage(
+    @Param() param: DeleteAnnouncementImageDTO,
+  ) {
+    return await this._service.deleteImage(param.user_id, param.announcement_id, param.name);
   }
 }

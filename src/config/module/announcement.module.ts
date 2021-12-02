@@ -34,5 +34,6 @@ import { UserAnnouncementController } from '../../presentation/controller/user.a
     UserRepository,
     FavoriteRepository,
   ],
+  exports: [AnnouncementRepository]
 })
 export class AnnouncementModule {}

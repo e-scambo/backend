@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model } from 'mongoose';
+import { FilterQuery, Model, UpdateQuery } from 'mongoose';
 import { MongoQueryModel } from 'nest-mongo-query-parser';
 import {
   Announcement,
@@ -40,7 +40,7 @@ export class AnnouncementRepository extends BaseRepository<
 
   async updateOne(
     filter: FilterQuery<AnnouncementDocument>,
-    body: Announcement,
+    body: UpdateQuery<AnnouncementDocument>,
   ): Promise<AnnouncementDocument> {
     return this._model
       .findOneAndUpdate(filter, body, { new: true })

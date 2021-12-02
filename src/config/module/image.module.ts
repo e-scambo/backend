@@ -7,9 +7,13 @@ import { ImageController } from '../../presentation/controller/image.controller'
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Image.name, schema: ImageSchema }]),
+    MongooseModule.forFeature([
+      { name: Image.name, schema: ImageSchema }
+    ]),
   ],
   controllers: [ImageController],
-  providers: [ImageService, ImageRepository],
+  providers: [
+    ImageService, 
+    ImageRepository]
 })
 export class ImageModule {}

@@ -1,12 +1,12 @@
 import { Controller, Get, Param, Res } from '@nestjs/common';
 import { Response } from 'express';
+import * as stream from 'stream';
 import { ImageService } from '../../business/service/image.service';
 import { FindImageByNameDTO } from '../dto/image.dto';
-import * as stream from 'stream';
 
 @Controller('images')
 export class ImageController {
-  constructor(private readonly _service: ImageService) {}
+  constructor(private readonly _service: ImageService) { }
 
   @Get(':name')
   async downloadImage(
