@@ -17,6 +17,7 @@ import {
   ApiConsumes,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
+  ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
@@ -34,6 +35,7 @@ import {
 } from '../dto/announcement.dto';
 import { UserParamByIdDTO } from '../dto/user.dto';
 import { ImageEnum } from '../enum/image.enum';
+import { AnnouncementByIdParam } from '../swagger/param/announcement.param';
 import { ApiQueryParam } from '../swagger/param/query.param';
 import { UserByIdParam } from '../swagger/param/user.param';
 import {
@@ -41,8 +43,12 @@ import {
   InternalServerErrorResponse,
 } from '../swagger/response/error.response';
 import {
+  AnnouncementNotFoundErrorResponse,
   CreateAnnouncementResponse,
+  DeleteOneAnnouncementResponse,
   FindAnnouncementResponse,
+  FindOneAnnouncementResponse,
+  UpdateOneAnnouncementResponse,
 } from '../swagger/response/user.announcement.response';
 import { UserNotFoundErrorResponse } from '../swagger/response/user.response';
 import { IsValidImageMimetypeValidator } from '../validator/is.valid.image.mimetype.validator';
@@ -81,6 +87,8 @@ export class UserAnnouncementController {
   @ApiParam(UserByIdParam)
   @ApiQuery(ApiQueryParam)
   @ApiOkResponse(FindAnnouncementResponse)
+  @ApiBadRequestResponse(BadRequestValidationErrorResponse)
+  @ApiInternalServerErrorResponse(InternalServerErrorResponse)
   async find(
     @Param() param: UserParamByIdDTO,
     @MongoQuery() query: MongoQueryModel,
@@ -90,11 +98,23 @@ export class UserAnnouncementController {
   }
 
   @Get(':announcement_id')
+  @ApiParam(UserByIdParam)
+  @ApiParam(AnnouncementByIdParam)
+  @ApiOkResponse(FindOneAnnouncementResponse)
+  @ApiBadRequestResponse(BadRequestValidationErrorResponse)
+  @ApiNotFoundResponse(AnnouncementNotFoundErrorResponse)
+  @ApiInternalServerErrorResponse(InternalServerErrorResponse)
   async findById(@Param() param: FindAnnouncementDto) {
     return this._service.findById(param.announcement_id, param.user_id);
   }
 
   @Put(':announcement_id')
+  @ApiParam(UserByIdParam)
+  @ApiParam(AnnouncementByIdParam)
+  @ApiOkResponse(UpdateOneAnnouncementResponse)
+  @ApiBadRequestResponse(BadRequestValidationErrorResponse)
+  @ApiNotFoundResponse(AnnouncementNotFoundErrorResponse)
+  @ApiInternalServerErrorResponse(InternalServerErrorResponse)
   async updateAnnouncement(
     @Param() param: FindAnnouncementDto,
     @Body() body: UpdateAnnouncementDto,
@@ -105,6 +125,12 @@ export class UserAnnouncementController {
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':announcement_id')
+  @ApiParam(UserByIdParam)
+  @ApiParam(AnnouncementByIdParam)
+  @ApiNoContentResponse(DeleteOneAnnouncementResponse)
+  @ApiBadRequestResponse(BadRequestValidationErrorResponse)
+  @ApiNotFoundResponse(AnnouncementNotFoundErrorResponse)
+  @ApiInternalServerErrorResponse(InternalServerErrorResponse)
   async deleteAnnouncement(@Param() param: FindAnnouncementDto) {
     return this._service.delete(param.announcement_id, param.user_id);
   }
