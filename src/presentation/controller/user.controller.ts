@@ -11,6 +11,7 @@ import {
   Put,
   UseInterceptors,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { UserService } from '../../business/service/user.service';
 import { UserInterceptor } from '../../config/interceptor/user.interceptor';
 import {
@@ -21,6 +22,7 @@ import {
 } from '../dto/user.dto';
 
 @Controller('users')
+@ApiTags('users')
 @UseInterceptors(UserInterceptor)
 export class UserController {
   constructor(private readonly _service: UserService) {}

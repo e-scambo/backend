@@ -9,6 +9,7 @@ import {
   Post,
   UseInterceptors,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { MongoQuery, MongoQueryModel } from 'nest-mongo-query-parser';
 import { FavoriteService } from '../../business/service/favorite.service';
 import { FavoriteInterceptor } from '../../config/interceptor/favorite.interceptor';
@@ -16,6 +17,7 @@ import { CreateFavoriteDTO, FavoriteParamByIdDTO } from '../dto/favorite.dto';
 import { UserParamByIdDTO } from '../dto/user.dto';
 
 @Controller('users/:user_id/favorites')
+@ApiTags('users.favorites')
 @UseInterceptors(FavoriteInterceptor)
 export class UserFavoriteController {
   constructor(private readonly _service: FavoriteService) {}
