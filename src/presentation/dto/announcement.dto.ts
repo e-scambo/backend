@@ -111,6 +111,11 @@ export class FindAnnouncementDto extends UserParamByIdDTO {
   announcement_id: string;
 }
 
+export class FindAnnouncementByIdDTO {
+  @IsMongoId()
+  announcement_id: string;
+}
+
 export class UpdateAnnouncementDto {
   @ValidateIf((dto) => dto.title !== undefined)
   @IsDefined()
@@ -206,21 +211,17 @@ export class UpdateAnnouncementDto {
   owner: string;
 }
 
-export class AnnouncementImageDTO extends UserParamByIdDTO{
-
+export class AnnouncementImageDTO extends UserParamByIdDTO {
   @IsMongoId()
   announcement_id: string;
-
 }
 
-export class DeleteAnnouncementImageDTO extends UserParamByIdDTO{
-
+export class DeleteAnnouncementImageDTO extends UserParamByIdDTO {
   @IsMongoId()
   announcement_id: string;
 
   @IsValidImageName()
-  name: string
-
+  name: string;
 }
 
 export type ImageDTO = {

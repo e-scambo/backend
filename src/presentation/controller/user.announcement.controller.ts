@@ -115,7 +115,7 @@ export class UserAnnouncementController {
   @ApiNotFoundResponse(AnnouncementNotFoundErrorResponse)
   @ApiInternalServerErrorResponse(InternalServerErrorResponse)
   async findById(@Param() param: FindAnnouncementDto) {
-    return this._service.findById(param.announcement_id, param.user_id);
+    return this._service.findByIdAndOwner(param.announcement_id, param.user_id);
   }
 
   @Put(':announcement_id')

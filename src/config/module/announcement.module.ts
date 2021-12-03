@@ -15,6 +15,7 @@ import {
 } from '../../infrastructure/schema/favorite.schema';
 import { Image, ImageSchema } from '../../infrastructure/schema/image.schema';
 import { User, UserSchema } from '../../infrastructure/schema/user.schema';
+import { AnnouncementController } from '../../presentation/controller/announcement.controller';
 import { UserAnnouncementController } from '../../presentation/controller/user.announcement.controller';
 
 @Module({
@@ -26,7 +27,7 @@ import { UserAnnouncementController } from '../../presentation/controller/user.a
       { name: Favorite.name, schema: FavoriteSchema },
     ]),
   ],
-  controllers: [UserAnnouncementController],
+  controllers: [UserAnnouncementController, AnnouncementController],
   providers: [
     AnnouncementService,
     AnnouncementRepository,
@@ -34,6 +35,6 @@ import { UserAnnouncementController } from '../../presentation/controller/user.a
     UserRepository,
     FavoriteRepository,
   ],
-  exports: [AnnouncementRepository]
+  exports: [AnnouncementRepository],
 })
 export class AnnouncementModule {}
