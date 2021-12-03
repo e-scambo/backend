@@ -147,7 +147,7 @@ describe('AnnouncementService', () => {
           .fn()
           .mockResolvedValueOnce(AnnouncementMock.populatedResponse);
 
-        const result = await service.findById(
+        const result = await service.findByIdAndOwner(
           AnnouncementMock.response._id,
           AnnouncementMock.response.owner,
         );
@@ -161,7 +161,7 @@ describe('AnnouncementService', () => {
         repository.findOne = jest.fn().mockResolvedValueOnce(null);
 
         try {
-          await service.findById(
+          await service.findByIdAndOwner(
             AnnouncementMock.response._id,
             AnnouncementMock.response.owner,
           );
@@ -180,7 +180,7 @@ describe('AnnouncementService', () => {
           .mockRejectedValueOnce(DatabaseMock.error);
 
         try {
-          await service.findById(
+          await service.findByIdAndOwner(
             AnnouncementMock.response._id,
             AnnouncementMock.response.owner,
           );

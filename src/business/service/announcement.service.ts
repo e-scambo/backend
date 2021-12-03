@@ -1,11 +1,19 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { MongoQueryModel } from 'nest-mongo-query-parser';
 import { AnnouncementRepository } from '../../infrastructure/repository/announcement.repository';
 import { FavoriteRepository } from '../../infrastructure/repository/favorite.repository';
 import { ImageRepository } from '../../infrastructure/repository/image.repository';
 import { UserRepository } from '../../infrastructure/repository/user.repository';
 import { Announcement } from '../../infrastructure/schema/announcement.schema';
-import { CreateAnnouncementDTO, ImageDTO } from '../../presentation/dto/announcement.dto';
+import {
+  CreateAnnouncementDTO,
+  ImageDTO,
+} from '../../presentation/dto/announcement.dto';
 import { ImageEnum } from '../../presentation/enum/image.enum';
 import { ImageUtil } from '../util/image.util';
 import { UpdateAnnouncementDto } from './../../presentation/dto/announcement.dto';
@@ -17,7 +25,7 @@ export class AnnouncementService {
     private readonly _imageRepository: ImageRepository,
     private readonly _userRepository: UserRepository,
     private readonly _favoriteRepository: FavoriteRepository,
-  ) { }
+  ) {}
 
   async create(item: CreateAnnouncementDTO): Promise<Announcement> {
     const ownerExists = await this._userRepository.checkExists({
@@ -46,7 +54,19 @@ export class AnnouncementService {
     return this._repository.findWithQuery(query);
   }
 
-  async findById(_id: string, user_id: string): Promise<Announcement> {
+  async findById(_id: string): Promise<Announcement> {
+    const announcement = await this._repository.findOne({
+      _id,
+    });
+
+    if (!announcement) {
+      throw new NotFoundException('Announcement not found or already removed.');
+    }
+
+    return announcement;
+  }
+
+  async findByIdAndOwner(_id: string, user_id: string): Promise<Announcement> {
     const announcement = await this._repository.findOne({
       _id,
       owner: user_id,
@@ -95,9 +115,17 @@ export class AnnouncementService {
     ]);
   }
 
-  async addImage(userId: string, announcementid: string,image: ImageDTO): Promise<Announcement> {
-    const announcement = await this._repository.findOne({ _id: announcementid, owner: userId });
-    if (!announcement) throw new NotFoundException('Announcement not found');
+  async addImage(
+    userId: string,
+    announcementid: string,
+    image: ImageDTO,
+  ): Promise<Announcement> {
+    const announcement = await this._repository.findOne({
+      _id: announcementid,
+      owner: userId,
+    });
+    if (!announcement)
+      throw new NotFoundException('Announcement not found or already removed.');
 
     if (announcement.images.length === ImageEnum.MAX_IMAGE_QUANTITY) {
       throw new BadRequestException('Exceeds maximum number of images');
@@ -107,34 +135,43 @@ export class AnnouncementService {
     const newImage = await this._imageRepository.create(image);
     return await this._repository.updateOne(
       { _id: announcement.id },
-      { $push: { images: [newImage.id] } }
+      { $push: { images: [newImage.id] } },
     );
-
   }
 
-  async deleteImage(user: string, announcement: string, originalname: string): Promise<Announcement> {
-    const image = await this.deleteImageFromDataBase(user, originalname)
+  async deleteImage(
+    user: string,
+    announcement: string,
+    originalname: string,
+  ): Promise<Announcement> {
+    const image = await this.deleteImageFromDataBase(user, originalname);
 
-    return this.deleteImageFromAnnouncement(image, announcement)
+    return this.deleteImageFromAnnouncement(image, announcement);
   }
 
-  private async deleteImageFromDataBase(user: string, originalname: string): Promise<string> {
-    if (!await this._imageRepository.checkExists({ originalname })) {
-      throw new NotFoundException('Image not found or already removed.')
+  private async deleteImageFromDataBase(
+    user: string,
+    originalname: string,
+  ): Promise<string> {
+    if (!(await this._imageRepository.checkExists({ originalname }))) {
+      throw new NotFoundException('Image not found or already removed.');
     }
 
     if (!ImageUtil.isImageOwner(user, originalname)) {
       throw new UnauthorizedException(`This user can't delete this image`);
     }
 
-    const result = await this._imageRepository.deleteOne({ originalname })
+    const result = await this._imageRepository.deleteOne({ originalname });
     return result._id.toString();
   }
 
-  private async deleteImageFromAnnouncement(imageId: string, announcement: string): Promise<Announcement> {
-    const dbannouncement = await this.  _repository.updateOne(
+  private async deleteImageFromAnnouncement(
+    imageId: string,
+    announcement: string,
+  ): Promise<Announcement> {
+    const dbannouncement = await this._repository.updateOne(
       { _id: announcement },
-      { $pull: { images: imageId } }
+      { $pull: { images: imageId } },
     );
 
     if (!dbannouncement) throw new NotFoundException('Announcement not found.');
