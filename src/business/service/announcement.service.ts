@@ -124,11 +124,12 @@ export class AnnouncementService {
       _id: announcementid,
       owner: userId,
     });
-    if (!announcement)
+    if (!announcement) {
       throw new NotFoundException('Announcement not found or already removed.');
+    }
 
     if (announcement.images.length === ImageEnum.MAX_IMAGE_QUANTITY) {
-      throw new BadRequestException('Exceeds maximum number of images');
+      throw new BadRequestException('Exceeds maximum number of images.');
     }
 
     image.originalname = ImageUtil.generateImageName(userId, image.mimetype);
@@ -158,7 +159,7 @@ export class AnnouncementService {
     }
 
     if (!ImageUtil.isImageOwner(user, originalname)) {
-      throw new UnauthorizedException(`This user can't delete this image`);
+      throw new UnauthorizedException(`This user can't delete this image.`);
     }
 
     const result = await this._imageRepository.deleteOne({ originalname });

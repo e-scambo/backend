@@ -2,7 +2,7 @@ import { INestApplication, Logger } from '@nestjs/common';
 import * as morgan from 'morgan';
 
 export class MorganLogger {
-  static setupMorgan(app: INestApplication): void {
+  static config(app: INestApplication): void {
     const httpRequestLogger: Logger = new Logger('HTTPRequest');
     app.use(
       morgan(
