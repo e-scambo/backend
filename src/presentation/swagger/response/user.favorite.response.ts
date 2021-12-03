@@ -97,7 +97,7 @@ export const FindFavoriteIdResponse = {
 };
 
 export const FavoritesNotFoundErrorResponse = {
-  description: 'Dados informados já existem no banco',
+  description: 'Favorito|Anúncio|Usuário não encontrado ou já foi removido',
   type: FavoriteNotFoundResponse
 }
 
