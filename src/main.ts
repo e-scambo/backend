@@ -1,3 +1,4 @@
+
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './config/module/app.module';
@@ -8,8 +9,22 @@ import { Swagger } from './presentation/swagger/swagger';
 
 async function bootstrap() {
   const { PORT } = process.env;
+  const { CLIENT } = process.env;
   const app = await NestFactory.create(AppModule);
-  setMiddlewares(app);
+
+  const whitelist = [CLIENT];
+  app.enableCors({
+    origin: function (origin, callback) {
+      if (!origin || whitelist.indexOf(origin) !== -1) {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
+      }
+    },
+    credentials: true
+  });
+ 
+  setMiddlewares(app); 
   await app.listen(PORT);
 }
 
