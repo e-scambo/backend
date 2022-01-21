@@ -9,19 +9,49 @@ import {
   Patch,
   Post,
   Put,
-  UseInterceptors
+  UseGuards,
+  UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiConflictResponse, ApiConsumes, ApiCreatedResponse, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiParam, ApiProduces, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiConflictResponse,
+  ApiConsumes,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiInternalServerErrorResponse,
+  ApiNoContentResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiParam,
+  ApiProduces,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UserService } from '../../business/service/user.service';
 import { UserInterceptor } from '../../config/interceptor/user.interceptor';
 import {
   CreateUserDTO,
   UpdatePasswordDTO,
   UpdateUserDTO,
-  UserParamByIdDTO
+  UserParamByIdDTO,
 } from '../dto/user.dto';
-import { BadRequestValidationErrorResponse, InternalServerErrorResponse } from '../swagger/response/error.response';
-import { UserConlifctErrorResponse, UserCreatedResponse, UserForbiddenErrorResponse, UserNoContentResponse, UserNotFoundErrorResponse, UserNotFoundResponse, UserNotUniqueResponse, UserOkResponse, UserResponse } from '../swagger/response/user.response';
+import { PayloadGuard } from '../guard/payload.exists.guard';
+import {
+  BadRequestValidationErrorResponse,
+  InternalServerErrorResponse,
+} from '../swagger/response/error.response';
+import {
+  UserConlifctErrorResponse,
+  UserCreatedResponse,
+  UserForbiddenErrorResponse,
+  UserNoContentResponse,
+  UserNotFoundErrorResponse,
+  UserNotFoundResponse,
+  UserNotUniqueResponse,
+  UserOkResponse,
+  UserResponse,
+} from '../swagger/response/user.response';
 
 @Controller('users')
 @ApiTags('users')
@@ -30,6 +60,12 @@ export class UserController {
   constructor(private readonly _service: UserService) {}
 
   @Post()
+  @UseGuards(new PayloadGuard())
+  @UsePipes(
+    new ValidationPipe({
+      whitelist: true,
+    }),
+  )
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
   @ApiCreatedResponse(UserCreatedResponse)
@@ -41,7 +77,7 @@ export class UserController {
   }
 
   @Get(':user_id')
-  @ApiParam({name: 'user_id', description: 'Id do usuário'})
+  @ApiParam({ name: 'user_id', description: 'Id do usuário' })
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
   @ApiOkResponse(UserOkResponse)
@@ -53,9 +89,17 @@ export class UserController {
   }
 
   @Put(':user_id')
+  @UseGuards(new PayloadGuard())
+  @UsePipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      skipMissingProperties: true,
+    }),
+  )
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
-  @ApiParam({name: 'user_id', description: 'Id do usuário'})
+  @ApiParam({ name: 'user_id', description: 'Id do usuário' })
   @ApiOkResponse(UserOkResponse)
   @ApiNotFoundResponse(UserNotFoundErrorResponse)
   @ApiConflictResponse(UserConlifctErrorResponse)
@@ -72,7 +116,7 @@ export class UserController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
-  @ApiParam({name: 'user_id'})
+  @ApiParam({ name: 'user_id' })
   @ApiNoContentResponse(UserNoContentResponse)
   @ApiNotFoundResponse(UserNotFoundErrorResponse)
   @ApiBadRequestResponse(BadRequestValidationErrorResponse)
@@ -82,8 +126,14 @@ export class UserController {
   }
 
   @Patch('/:user_id/password')
+  @UseGuards(new PayloadGuard())
+  @UsePipes(
+    new ValidationPipe({
+      whitelist: true,
+    }),
+  )
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiParam({name: 'user_id', description: 'Id do usuário'})
+  @ApiParam({ name: 'user_id', description: 'Id do usuário' })
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
   @ApiNoContentResponse(UserNoContentResponse)

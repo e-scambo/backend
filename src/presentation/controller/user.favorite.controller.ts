@@ -7,17 +7,44 @@ import {
   HttpStatus,
   Param,
   Post,
-  UseInterceptors
+  UseGuards,
+  UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiConflictResponse, ApiConsumes, ApiCreatedResponse, ApiInternalServerErrorResponse, ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiParam, ApiProduces, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiConflictResponse,
+  ApiConsumes,
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNoContentResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiParam,
+  ApiProduces,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { MongoQuery, MongoQueryModel } from 'nest-mongo-query-parser';
 import { FavoriteService } from '../../business/service/favorite.service';
 import { FavoriteInterceptor } from '../../config/interceptor/favorite.interceptor';
 import { CreateFavoriteDTO, FavoriteParamByIdDTO } from '../dto/favorite.dto';
 import { UserParamByIdDTO } from '../dto/user.dto';
+import { PayloadGuard } from '../guard/payload.exists.guard';
 import { ApiQueryParam } from '../swagger/param/query.param';
-import { BadRequestValidationErrorResponse, InternalServerErrorResponse } from '../swagger/response/error.response';
-import { FavoritesConlifctErrorResponse, FavoritesCreatedResponse, FavoritesNoContentResponse, FavoritesNotFoundErrorResponse, FindFavoriteIdResponse, FindFavoritesQueryResponse } from '../swagger/response/user.favorite.response';
+import {
+  BadRequestValidationErrorResponse,
+  InternalServerErrorResponse,
+} from '../swagger/response/error.response';
+import {
+  FavoritesConlifctErrorResponse,
+  FavoritesCreatedResponse,
+  FavoritesNoContentResponse,
+  FavoritesNotFoundErrorResponse,
+  FindFavoriteIdResponse,
+  FindFavoritesQueryResponse,
+} from '../swagger/response/user.favorite.response';
 
 @Controller('users/:user_id/favorites')
 @ApiTags('users.favorites')
@@ -26,9 +53,15 @@ export class UserFavoriteController {
   constructor(private readonly _service: FavoriteService) {}
 
   @Post()
+  @UseGuards(new PayloadGuard())
+  @UsePipes(
+    new ValidationPipe({
+      whitelist: true,    
+    }),
+  )
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
-  @ApiParam( {name: 'user_id', description: 'Id do usuário'} )
+  @ApiParam({ name: 'user_id', description: 'Id do usuário' })
   @ApiCreatedResponse(FavoritesCreatedResponse)
   @ApiConflictResponse(FavoritesConlifctErrorResponse)
   @ApiNotFoundResponse(FavoritesNotFoundErrorResponse)
@@ -45,7 +78,7 @@ export class UserFavoriteController {
   @Get()
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
-  @ApiParam( {name: 'user_id', description: 'Id do usuário'} )
+  @ApiParam({ name: 'user_id', description: 'Id do usuário' })
   @ApiQuery(ApiQueryParam)
   @ApiOkResponse(FindFavoritesQueryResponse)
   @ApiNotFoundResponse(FavoritesNotFoundErrorResponse)
@@ -62,8 +95,8 @@ export class UserFavoriteController {
   @Get(':favorite_id')
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
-  @ApiParam( {name: 'user_id', description: 'Id do usuário'} )
-  @ApiParam( {name: 'favorite_id', description: 'Id do anúncio favoritado'} )
+  @ApiParam({ name: 'user_id', description: 'Id do usuário' })
+  @ApiParam({ name: 'favorite_id', description: 'Id do anúncio favoritado' })
   @ApiOkResponse(FindFavoriteIdResponse)
   @ApiNotFoundResponse(FavoritesNotFoundErrorResponse)
   @ApiBadRequestResponse(BadRequestValidationErrorResponse)
@@ -76,8 +109,8 @@ export class UserFavoriteController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
-  @ApiParam( {name: 'user_id', description: 'Id do usuário'} )
-  @ApiParam( {name: 'favorite_id', description: 'Id do anúncio favoritado'} )
+  @ApiParam({ name: 'user_id', description: 'Id do usuário' })
+  @ApiParam({ name: 'favorite_id', description: 'Id do anúncio favoritado' })
   @ApiNoContentResponse(FavoritesNoContentResponse)
   @ApiNotFoundResponse(FavoritesNotFoundErrorResponse)
   @ApiBadRequestResponse(BadRequestValidationErrorResponse)
