@@ -65,4 +65,3 @@ $ npm run test:cov
 - [Thiago Dutra](https://github.com/thiagodutra) - Desenvolvedor Backend
 - [Lucas Rocha](https://github.com/lucasrochagit) - Desenvolvedor Backend
 - [Joanderson Souza](https://github.com/WaifuForever) - Desenvolvedor Backend
-- [Roberto Filho](https://github.com/RobertoPSF) - Desenvolvedor Backend
