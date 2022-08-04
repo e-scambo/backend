@@ -16,7 +16,10 @@ import {
   BadRequestValidationErrorResponse,
   InternalServerErrorResponse,
 } from '../swagger/response/error.response';
-import { ImageNotFoundErrorResponse, ImageResponse } from '../swagger/response/image.response';
+import {
+  ImageNotFoundErrorResponse,
+  ImageResponse,
+} from '../swagger/response/image.response';
 
 @Controller('images')
 @ApiTags('images')

@@ -10,7 +10,7 @@ export class SchemaMock {
   private static mockBuilderCall(
     list: string[],
     mockReturn: jest.Mock<any, any>,
-    index: number = 0,
+    index = 0,
   ) {
     if (index === list.length) {
       return mockReturn;

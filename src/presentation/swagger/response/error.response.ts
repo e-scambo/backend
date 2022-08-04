@@ -43,4 +43,4 @@ export const BadRequestValidationErrorResponse = {
 export const InternalServerErrorResponse = {
   description: 'Houve um erro interno na aplicação',
   type: InternalServerError,
-}
+};

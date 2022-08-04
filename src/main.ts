@@ -15,15 +15,15 @@ async function bootstrap() {
   app.enableCors({
     origin: function (origin, callback) {
       if (!origin || whitelist.indexOf(origin) !== -1) {
-        callback(null, true)
+        callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'))
+        callback(new Error('Not allowed by CORS'));
       }
     },
-    credentials: true
+    credentials: true,
   });
- 
-  setMiddlewares(app); 
+
+  setMiddlewares(app);
   await app.listen(PORT);
 }
 

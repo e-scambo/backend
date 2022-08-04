@@ -19,7 +19,7 @@ export class IsValidPasswordConstraint implements ValidatorConstraintInterface {
 }
 
 export function IsValidPassword(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: unknown, propertyName: string) {
     registerDecorator({
       target: object.constructor,
       propertyName: propertyName,

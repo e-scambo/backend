@@ -56,7 +56,7 @@ export class UserFavoriteController {
   @UseGuards(new PayloadGuard())
   @UsePipes(
     new ValidationPipe({
-      whitelist: true,    
+      whitelist: true,
     }),
   )
   @ApiConsumes('application/json')

@@ -6,6 +6,12 @@ export function validateBadRequestBody(body: any, message: string) {
   expect(body).toHaveProperty('error', 'Bad Request');
 }
 
+export function validateConflictRequestBody(body: any, message: string) {
+  expect(body).toHaveProperty('statusCode', HttpStatus.CONFLICT);
+  expect(body).toHaveProperty('message', message);
+  expect(body).toHaveProperty('error', 'Conflict');
+}
+
 export function validateNotFoundBody(body: any, message: string) {
   expect(body).toHaveProperty('statusCode', HttpStatus.NOT_FOUND);
   expect(body).toHaveProperty('message', message);

@@ -86,7 +86,7 @@ describe('UserAnnouncementController', () => {
   describe('findById()', () => {
     describe('when findById is successful', () => {
       it('should return the founded announcement', async () => {
-        service.findById = jest
+        service.findByIdAndOwner = jest
           .fn()
           .mockResolvedValueOnce(AnnouncementMock.populatedResponse);
 
@@ -97,7 +97,9 @@ describe('UserAnnouncementController', () => {
 
     describe('when a database error occurs', () => {
       it('should throw the error', async () => {
-        service.findById = jest.fn().mockRejectedValueOnce(DatabaseMock.error);
+        service.findByIdAndOwner = jest
+          .fn()
+          .mockRejectedValueOnce(DatabaseMock.error);
 
         try {
           await controller.findById(paramsById);

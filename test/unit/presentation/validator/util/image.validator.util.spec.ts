@@ -1,11 +1,13 @@
-import { getId } from 'json-generator';
+import { getId, getStr } from 'json-generator';
 import { ImageValidatorUtil } from '../../../../../src/presentation/validator/util/image.validator.util';
 
 describe('ImageValidatorUtil', () => {
   describe('isValidImageName()', () => {
     describe('when validate if string is a valid phone', () => {
       it('should return true', () => {
-        const name = `IMG_${new Date().getTime()}_${getId('objectId')}.jpg`;
+        const name = `IMG_${new Date().getTime()}_${getStr(16, 'hex')}_${getId(
+          'objectId',
+        )}.jpg`;
         const result = ImageValidatorUtil.isValidImageName(name);
         expect(result).toEqual(true);
       });

@@ -21,7 +21,7 @@ export class IsValidLocalizationConstraint
 }
 
 export function IsValidLocalization(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: unknown, propertyName: string) {
     registerDecorator({
       target: object.constructor,
       propertyName: propertyName,

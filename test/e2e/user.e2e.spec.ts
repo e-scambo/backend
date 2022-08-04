@@ -11,8 +11,8 @@ import {
 import { bootstrapTest } from '../app/user.test.app';
 import { UserMock } from '../mock/user.mock';
 import {
-  validateBadRequestBody,
   validateBadRequestDTOBody,
+  validateConflictRequestBody,
   validateForbiddenBody,
   validateNotFoundBody,
 } from '../util/exception.validation.util';
@@ -52,9 +52,9 @@ describe('UserController (e2e)', () => {
         const response = await request
           .post('/users')
           .send(UserMock.request)
-          .expect(HttpStatus.BAD_REQUEST);
+          .expect(HttpStatus.CONFLICT);
 
-        validateBadRequestBody(
+        validateConflictRequestBody(
           response.body,
           'An user with this email or phone already exists.',
         );
@@ -65,7 +65,14 @@ describe('UserController (e2e)', () => {
       it('should return BadRequestException for does not inform required params', async () => {
         const response = await request
           .post('/users')
-          .send()
+          .send({
+            name: null,
+            email: null,
+            password: null,
+            city: null,
+            state: null,
+            phone: null,
+          })
           .expect(HttpStatus.BAD_REQUEST);
 
         validateBadRequestDTOBody(response.body, [
@@ -201,9 +208,9 @@ describe('UserController (e2e)', () => {
         const response = await request
           .put(`/users/${getId('objectId')}`)
           .send({ email: UserMock.request.email })
-          .expect(HttpStatus.BAD_REQUEST);
+          .expect(HttpStatus.CONFLICT);
 
-        validateBadRequestBody(
+        validateConflictRequestBody(
           response.body,
           'An user with this email or phone already exists.',
         );
@@ -213,9 +220,9 @@ describe('UserController (e2e)', () => {
         const response = await request
           .put(`/users/${getId('objectId')}`)
           .send({ phone: UserMock.request.phone })
-          .expect(HttpStatus.BAD_REQUEST);
+          .expect(HttpStatus.CONFLICT);
 
-        validateBadRequestBody(
+        validateConflictRequestBody(
           response.body,
           'An user with this email or phone already exists.',
         );

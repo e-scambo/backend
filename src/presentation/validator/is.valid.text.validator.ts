@@ -19,7 +19,7 @@ export class IsValidTextConstraint implements ValidatorConstraintInterface {
 }
 
 export function IsValidText(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: unknown, propertyName: string) {
     registerDecorator({
       target: object.constructor,
       propertyName: propertyName,

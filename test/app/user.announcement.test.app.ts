@@ -12,7 +12,10 @@ import {
   Announcement,
   AnnouncementSchema,
 } from '../../src/infrastructure/schema/announcement.schema';
-import { Favorite, FavoriteSchema } from '../../src/infrastructure/schema/favorite.schema';
+import {
+  Favorite,
+  FavoriteSchema,
+} from '../../src/infrastructure/schema/favorite.schema';
 import {
   Image,
   ImageSchema,
@@ -38,7 +41,7 @@ export async function bootstrapTest(): Promise<INestApplication> {
       AnnouncementRepository,
       ImageRepository,
       UserRepository,
-      FavoriteRepository
+      FavoriteRepository,
     ],
   }).compile();
 

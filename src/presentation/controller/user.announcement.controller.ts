@@ -133,7 +133,7 @@ export class UserAnnouncementController {
     new ValidationPipe({
       whitelist: true,
       skipMissingProperties: true,
-      forbidNonWhitelisted: true
+      forbidNonWhitelisted: true,
     }),
   )
   @ApiParam(UserByIdParam)

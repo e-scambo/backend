@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { ApiResponseProperty, getSchemaPath } from '@nestjs/swagger';
+import { ApiResponseProperty } from '@nestjs/swagger';
 import { ReadOnlyResponse } from './readonly.response';
 
 class AnnouncementResponse extends ReadOnlyResponse {

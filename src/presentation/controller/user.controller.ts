@@ -47,10 +47,7 @@ import {
   UserForbiddenErrorResponse,
   UserNoContentResponse,
   UserNotFoundErrorResponse,
-  UserNotFoundResponse,
-  UserNotUniqueResponse,
   UserOkResponse,
-  UserResponse,
 } from '../swagger/response/user.response';
 
 @Controller('users')

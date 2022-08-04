@@ -4,9 +4,7 @@ import { Image } from '../../infrastructure/schema/image.schema';
 
 @Injectable()
 export class ImageService {
-  constructor(
-    private readonly _repository: ImageRepository,
-    ) {}
+  constructor(private readonly _repository: ImageRepository) {}
 
   async findByName(originalname: string): Promise<Image> {
     const result = await this._repository.findOne({ originalname });

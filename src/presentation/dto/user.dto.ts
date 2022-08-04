@@ -25,7 +25,7 @@ export class CreateUserDTO {
   @IsNotEmpty()
   @IsAlphaWithSpace()
   name: string;
-  
+
   @ApiProperty({
     writeOnly: true,
     description: 'Email do usuário',

@@ -9,7 +9,9 @@ export class ExpressMock {
     response.once = jest.fn().mockReturnThis();
     response.emit = jest.fn().mockReturnValue(true);
     response.write = jest.fn().mockReturnValue(true);
-    response.end = jest.fn().mockImplementation(() => {});
+    response.end = jest.fn().mockImplementation(function () {
+      return;
+    });
     return response;
   }
 }

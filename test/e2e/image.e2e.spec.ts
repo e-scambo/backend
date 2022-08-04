@@ -1,6 +1,6 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { getModelToken } from '@nestjs/mongoose';
-import { getId } from 'json-generator';
+import { getId, getStr } from 'json-generator';
 import { Model } from 'mongoose';
 import * as Request from 'supertest';
 import {
@@ -27,7 +27,9 @@ describe('ImageController (e2e)', () => {
     model = app.get(getModelToken(Image.name));
     savedImage = await model.create({
       ...ImageMock.request,
-      originalname: `IMG_${new Date().getTime()}_${getId('objectId')}.png`,
+      originalname: `IMG_${new Date().getTime()}_${getStr(16, 'hex')}_${getId(
+        'objectId',
+      )}.png`,
     });
   });
 
@@ -48,9 +50,10 @@ describe('ImageController (e2e)', () => {
 
     describe('when image is not founded', () => {
       it('should throw a NotFoundException', async () => {
-        const anotherName = `IMG_${new Date().getTime()}_${getId(
-          'objectId',
-        )}.jpg`;
+        const anotherName = `IMG_${new Date().getTime()}_${getStr(
+          16,
+          'hex',
+        )}_${getId('objectId')}.jpg`;
 
         const response = await request
           .get(`/images/${anotherName}`)
@@ -70,7 +73,7 @@ describe('ImageController (e2e)', () => {
           .expect(HttpStatus.BAD_REQUEST);
 
         validateBadRequestDTOBody(response.body, [
-          'name must be like: IMG_[dateTime]_[objectId].[jpg,jpeg,png]',
+          'name must be like: IMG_[dateTime]_[HexHash]_[objectId].[jpg,jpeg,png]',
         ]);
       });
     });

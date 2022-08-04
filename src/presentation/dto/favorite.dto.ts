@@ -3,7 +3,6 @@ import { IsDefined, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 import { UserParamByIdDTO } from './user.dto';
 
 export class CreateFavoriteDTO {
-  
   @ApiProperty({
     writeOnly: true,
     description: 'Id do anúncio',
@@ -14,7 +13,7 @@ export class CreateFavoriteDTO {
   @IsNotEmpty()
   @IsMongoId()
   announcement: string;
-  
+
   @ApiProperty({
     writeOnly: true,
     description: 'Id do anúncio',

@@ -1,7 +1,6 @@
 import { mock } from 'sinon';
 import { ImageController } from '../../../../src/presentation/controller/image.controller';
 import { ImageMock } from '../../../mock/image.mock';
-import { Response } from 'express';
 import { ExpressMock } from '../../../mock/express.mock';
 import { DatabaseMock } from '../../../mock/database.mock';
 

@@ -15,9 +15,7 @@ describe('UserController', () => {
   describe('create()', () => {
     describe('when create is successful', () => {
       it('should return the created user', async () => {
-        service.create = jest
-          .fn()
-          .mockResolvedValueOnce(UserMock.response);
+        service.create = jest.fn().mockResolvedValueOnce(UserMock.response);
 
         const result = await controller.create(UserMock.request);
         expect(result).toMatchObject(UserMock.response);
@@ -40,9 +38,7 @@ describe('UserController', () => {
   describe('findById()', () => {
     describe('when findById is successful', () => {
       it('should return the fonded user', async () => {
-        service.findById = jest
-          .fn()
-          .mockResolvedValueOnce(UserMock.response);
+        service.findById = jest.fn().mockResolvedValueOnce(UserMock.response);
 
         const result = await controller.findById({
           user_id: UserMock.response._id,
@@ -69,9 +65,7 @@ describe('UserController', () => {
   describe('updateById()', () => {
     describe('when updateById is successful', () => {
       it('should return the updated user', async () => {
-        service.updateById = jest
-          .fn()
-          .mockResolvedValueOnce(UserMock.response);
+        service.updateById = jest.fn().mockResolvedValueOnce(UserMock.response);
 
         const result = await controller.updateById(
           {
@@ -106,9 +100,7 @@ describe('UserController', () => {
   describe('deleteById()', () => {
     describe('when deleteById is successful', () => {
       it('should return the fonded user', async () => {
-        service.deleteById = jest
-          .fn()
-          .mockResolvedValueOnce(UserMock.response);
+        service.deleteById = jest.fn().mockResolvedValueOnce(UserMock.response);
 
         const result = await controller.deleteById({
           user_id: UserMock.response._id,
