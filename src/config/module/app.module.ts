@@ -7,6 +7,7 @@ import { AuthModule } from './auth.module';
 import { FavoriteModule } from './favorite.module';
 import { ImageModule } from './image.module';
 import { UserModule } from './user.module';
+import { HealthModule } from './health.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { UserModule } from './user.module';
     FavoriteModule,
     ImageModule,
     UserModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [],
