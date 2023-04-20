@@ -4,7 +4,12 @@ describe('PasswordValidatorUtil', () => {
   describe('isValidPassword()', () => {
     describe('when validate if string is a valid password', () => {
       it('should return true', () => {
-        const result = PasswordValidatorUtil.isValidPassword('pass*123');
+        const result = PasswordValidatorUtil.isValidPassword('pDass*123');
+        expect(result).toEqual(true);
+      });
+
+      it('should return true', () => {
+        const result = PasswordValidatorUtil.isValidPassword('stronG32@3');
         expect(result).toEqual(true);
       });
     });
@@ -13,6 +18,13 @@ describe('PasswordValidatorUtil', () => {
       it('should return false', () => {
         const result = PasswordValidatorUtil.isValidPassword(
           '`p@@SS`%%<p>w oord</p>',
+        );
+        expect(result).toEqual(false);
+      });
+
+      it('should return false', () => {
+        const result = PasswordValidatorUtil.isValidPassword(
+          'asd',
         );
         expect(result).toEqual(false);
       });

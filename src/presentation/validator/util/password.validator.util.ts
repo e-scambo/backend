@@ -1,6 +1,6 @@
 export class PasswordValidatorUtil {
   static isValidPassword(password: string): boolean {
     if (!password) return false;
-    return /^([A-ZÀ-Üa-zà-ü0-9!@#$%&*])*(?<! )$/.test(password);
+    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,}$/.test(password);
   }
 }

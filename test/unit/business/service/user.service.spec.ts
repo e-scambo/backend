@@ -12,11 +12,13 @@ import { UserMock } from '../../../mock/user.mock';
 
 describe('UserService', () => {
   let repository: any;
+  let mailService: any;
   let service: UserService;
 
   beforeAll(() => {
     repository = mock();
-    service = new UserService(repository);
+    mailService = mock();
+    service = new UserService(repository, mailService);
   });
 
   describe('create()', () => {

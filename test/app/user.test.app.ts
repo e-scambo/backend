@@ -7,13 +7,28 @@ import { AllExceptionsFilter } from '../../src/config/filter/exception.filter';
 import { UserRepository } from '../../src/infrastructure/repository/user.repository';
 import { User, UserSchema } from '../../src/infrastructure/schema/user.schema';
 import { UserController } from '../../src/presentation/controller/user.controller';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 export async function bootstrapTest(): Promise<INestApplication> {
   const moduleFixture = await Test.createTestingModule({
     imports: [
       ConfigModule.forRoot(),
-      MongooseModule.forRoot(process.env.TEST_DATABASE_URL),
+      MongooseModule.forRoot(process.env.TEST_DATABASE_URL, {
+        retryDelay: 2000,
+        retryAttempts: 3,
+      }),
       MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+      MailerModule.forRoot({
+        transport: {
+          service: process.env.SMTP_HOST,
+          auth: {
+            user: process.env.PASS,
+            pass: process.env.EMAIL,
+          },
+          port: 2525,
+          secure: true,
+        },
+      }),
     ],
     controllers: [UserController],
     providers: [UserService, UserRepository],

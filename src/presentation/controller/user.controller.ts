@@ -32,9 +32,12 @@ import { UserService } from '../../business/service/user.service';
 import { UserInterceptor } from '../../config/interceptor/user.interceptor';
 import {
   CreateUserDTO,
+  RecoverPasswordDTO,
   UpdatePasswordDTO,
   UpdateUserDTO,
   UserParamByIdDTO,
+  UserParamRedefinePasswordDTO,
+  UserRedefinePasswordDTO,
 } from '../dto/user.dto';
 import { PayloadGuard } from '../guard/payload.exists.guard';
 import {
@@ -49,6 +52,7 @@ import {
   UserNotFoundErrorResponse,
   UserOkResponse,
 } from '../swagger/response/user.response';
+import { User } from 'src/infrastructure/schema/user.schema';
 
 @Controller('users')
 @ApiTags('users')
@@ -105,7 +109,7 @@ export class UserController {
   async updateById(
     @Param() param: UserParamByIdDTO,
     @Body() dto: UpdateUserDTO,
-  ): Promise<object> {
+  ): Promise<User> {
     return this._service.updateById(param.user_id, dto);
   }
 
@@ -143,5 +147,25 @@ export class UserController {
     @Body() dto: UpdatePasswordDTO,
   ): Promise<void> {
     return this._service.updatePassword(param.user_id, dto);
+  }
+
+  @Get('/:user_id/recover-password')
+  @ApiConsumes('application/json')
+  @ApiProduces('application/json')
+  async recoverPassword(
+    @Param() param: UserParamByIdDTO,
+    @Body() dto: RecoverPasswordDTO,
+  ): Promise<void> {
+    return this._service.recoverPassword(dto.email, param.user_id);
+  }
+
+  @Get('/redefine-password/:token')
+  @ApiConsumes('application/json')
+  @ApiProduces('application/json')
+  async redefinePassword(
+    @Param() param: UserParamRedefinePasswordDTO,
+    @Body() dto: UserRedefinePasswordDTO,
+  ): Promise<void> {
+    return this._service.redefinePassword(param.token, dto.password);
   }
 }

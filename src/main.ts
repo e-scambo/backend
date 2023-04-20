@@ -13,7 +13,6 @@ async function bootstrap() {
 
   const whitelist = [CLIENT];
   app.enableCors();
-
   setMiddlewares(app);
   await app.listen(PORT);
 }

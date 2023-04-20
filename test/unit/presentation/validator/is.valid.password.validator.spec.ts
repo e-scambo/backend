@@ -11,7 +11,7 @@ describe('IsValidPasswordConstraint', () => {
   describe('validate()', () => {
     describe('when validate is successful', () => {
       it('should return true', () => {
-        const result = validator.validate('pass*123');
+        const result = validator.validate('Dpass*123');
         expect(result).toEqual(true);
       });
     });
@@ -19,6 +19,11 @@ describe('IsValidPasswordConstraint', () => {
     describe('when validate fails', () => {
       it('should return false', () => {
         const result = validator.validate('`p@@SS`%%<p>w oord</p>');
+        expect(result).toEqual(false);
+      });
+
+      it('should return false', () => {
+        const result = validator.validate('lass*123');
         expect(result).toEqual(false);
       });
     });
@@ -30,7 +35,7 @@ describe('IsValidPasswordConstraint', () => {
         property: 'key',
       } as ValidationArguments);
       expect(result).toBe(
-        'key must contains letters, numbers and the special characters: !@#$%&*',
+        'key must contains letters, numbers and non latin characters.',
       );
     });
   });
