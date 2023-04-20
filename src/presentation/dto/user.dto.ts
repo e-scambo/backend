@@ -158,7 +158,7 @@ export class UpdateUserDTO {
   phone: string;
 }
 
-export class RecoverPasswordDTO {
+export class sendRecoveryLinkDTO {
   @ApiProperty({
     writeOnly: true,
     description: 'Email do usuário',

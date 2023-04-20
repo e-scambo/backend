@@ -99,7 +99,7 @@ describe('UserController', () => {
 
   describe('deleteById()', () => {
     describe('when deleteById is successful', () => {
-      it('should return the fonded user', async () => {
+      it('should return the user found', async () => {
         service.deleteById = jest.fn().mockResolvedValueOnce(UserMock.response);
 
         const result = await controller.deleteById({
@@ -150,6 +150,76 @@ describe('UserController', () => {
           await controller.updatePassword(
             { user_id: UserMock.response._id },
             UserMock.updatePasswordRequest,
+          );
+        } catch (err) {
+          expect(err).toMatchObject(DatabaseMock.error);
+        }
+      });
+    });
+  });
+
+  describe('sendRecoveryLink()', () => {
+    describe('when sendRecoveryLink is successful', () => {
+      it('should return undefined', async () => {
+        service.sendRecoveryLink = jest.fn().mockResolvedValueOnce(undefined);
+
+        const result = await controller.sendRecoveryLink(
+          { user_id: UserMock.response._id },
+          { email: UserMock.response.email },
+        );
+
+        expect(result).toBeUndefined();
+      });
+    });
+
+    describe('when an error occurs', () => {
+      it('should throw the error', async () => {
+        service.sendRecoveryLink = jest
+          .fn()
+          .mockRejectedValueOnce(DatabaseMock.error);
+
+        try {
+          await controller.sendRecoveryLink(
+            { user_id: UserMock.response._id },
+            { email: UserMock.response.email },
+          );
+        } catch (err) {
+          expect(err).toMatchObject(DatabaseMock.error);
+        }
+      });
+    });
+  });
+
+  describe('redefinePassword()', () => {
+    describe('when redefinePassword is successful', () => {
+      it('should return undefined', async () => {
+        service.redefinePassword = jest.fn().mockResolvedValueOnce(undefined);
+
+        const result = await controller.redefinePassword(
+          {
+            token:
+              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaXJqb2FuZGVyc29ud2ZAZ21haWwuY29tIiwiaWF0IjoxNjgxOTE2Nzk5LCJleHAiOjE2ODI1MjE1OTl9.q6TbxRC-bi_bKDHZXTPMWML_PLYZ_HaD2qwiTTBG-KU',
+          },
+          { password: UserMock.response.password },
+        );
+
+        expect(result).toBeUndefined();
+      });
+    });
+
+    describe('when an error occurs', () => {
+      it('should throw the error', async () => {
+        service.redefinePassword = jest
+          .fn()
+          .mockRejectedValueOnce(DatabaseMock.error);
+
+        try {
+          await controller.redefinePassword(
+            {
+              token:
+                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaXJqb2FuZGVyc29ud2ZAZ21haWwuY29tIiwiaWF0IjoxNjgxOTE2Nzk5LCJleHAiOjE2ODI1MjE1OTl9.q6TbxRC-bi_bKDHZXTPMWML_PLYZ_HaD2qwiTTBG-KU',
+            },
+            { password: UserMock.response.password },
           );
         } catch (err) {
           expect(err).toMatchObject(DatabaseMock.error);

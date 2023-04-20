@@ -32,7 +32,7 @@ import { UserService } from '../../business/service/user.service';
 import { UserInterceptor } from '../../config/interceptor/user.interceptor';
 import {
   CreateUserDTO,
-  RecoverPasswordDTO,
+  sendRecoveryLinkDTO,
   UpdatePasswordDTO,
   UpdateUserDTO,
   UserParamByIdDTO,
@@ -150,18 +150,23 @@ export class UserController {
   }
 
   @Get('/:user_id/recover-password')
+  @ApiParam({ name: 'user_id', description: 'Id do usuário' })
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
-  async recoverPassword(
+  @ApiNotFoundResponse(UserNotFoundErrorResponse)
+  
+  async sendRecoveryLink(
     @Param() param: UserParamByIdDTO,
-    @Body() dto: RecoverPasswordDTO,
+    @Body() dto: sendRecoveryLinkDTO,
   ): Promise<void> {
-    return this._service.recoverPassword(dto.email, param.user_id);
+    return this._service.sendRecoveryLink(dto.email, param.user_id);
   }
 
   @Get('/redefine-password/:token')
+  @ApiParam({ name: 'token', description: 'jwt_token recebido' })
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
+  @ApiForbiddenResponse(UserForbiddenErrorResponse)
   async redefinePassword(
     @Param() param: UserParamRedefinePasswordDTO,
     @Body() dto: UserRedefinePasswordDTO,

@@ -88,7 +88,7 @@ export class UserService {
     await this._repository.updateOne({ _id }, { password });
   }
 
-  async recoverPassword(email: string, _id: string): Promise<void> {
+  async sendRecoveryLink(email: string, _id: string): Promise<void> {
     // 1. Buscar usuário e verificar se o mesmo existe
     const user: User = await this._repository.findOne({
       email: email,
