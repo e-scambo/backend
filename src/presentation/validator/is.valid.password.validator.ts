@@ -5,7 +5,6 @@ import {
   ValidatorConstraintInterface,
   ValidationArguments,
 } from 'class-validator';
-import { PasswordUtil } from 'src/business/util/password.util';
 import { PasswordValidatorUtil } from './util/password.validator.util';
 
 @ValidatorConstraint({ async: true })
