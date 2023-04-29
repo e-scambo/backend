@@ -5,7 +5,7 @@ export class UserMock {
     return {
       name: 'John Doe',
       email: 'johndoe@mail.com',
-      password: 'secretPassWord',
+      password: 'secre3@tPassWord',
       phone: '(88) 98888-8888',
       state: 'State of Tests',
       city: 'City of Tests',

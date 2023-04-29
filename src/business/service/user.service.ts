@@ -29,6 +29,7 @@ export class UserService {
       $or: [{ email: item.email }, { phone: item.phone }],
     });
     item.password = PasswordUtil.encrypt(item.password);
+    console.log(item);
     return this._repository.create(item);
   }
 
@@ -126,7 +127,7 @@ export class UserService {
       const doesUserExist = await this._repository.checkExists({
         _id: payload._id,
       });
-      
+
       if (!doesUserExist) {
         throw new UnauthorizedException(
           'Invalid credentials. Please try again with valid credentials.',

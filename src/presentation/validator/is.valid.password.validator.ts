@@ -5,21 +5,43 @@ import {
   ValidatorConstraintInterface,
   ValidationArguments,
 } from 'class-validator';
-import { PasswordValidatorUtil } from './util/password.validator.util';
 
 @ValidatorConstraint({ async: true })
 export class IsValidPasswordConstraint implements ValidatorConstraintInterface {
+  message: string = '';
   validate(value: any, args?: ValidationArguments) {
     const relatedValue = args?.object?.[args?.constraints?.[0]];
     const bool = relatedValue
       ? typeof value === 'string' && typeof relatedValue === 'string'
       : typeof value === 'string';
+    let isValidPassword = true;
 
-    return bool && PasswordValidatorUtil.isValidPassword(value);
+    if (!/(.*[a-z])/.test(value)) {
+      this.message +=
+        'The password must contain at least one lowercase character. ';
+      isValidPassword = false;
+    }
+    if (!/(.*[A-Z])/.test(value)) {
+      this.message +=
+        'The password must contain at least one uppercase character. ';
+      isValidPassword = false;
+    }
+    if (!/(.*\d)/.test(value)) {
+      this.message += 'The password must contain at least one digit. ';
+      isValidPassword = false;
+    }
+    if (!/(.*[^a-zA-Z0-9])/.test(value)) {
+      this.message +=
+        'The password must contain at least one non latin character.';
+      isValidPassword = false;
+    }
+
+    return bool && isValidPassword;
   }
   defaultMessage(args: ValidationArguments) {
-    // here you can provide default error message if validation failed
-    return 'key must contains letters, numbers and non latin characters.';
+    const temp = this.message.trim();
+    this.message = '';
+    return temp;
   }
 }
 

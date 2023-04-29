@@ -43,7 +43,7 @@ import {
 } from '../dto/announcement.dto';
 import { UserParamByIdDTO } from '../dto/user.dto';
 import { ImageEnum } from '../enum/image.enum';
-import { PayloadGuard } from '../guard/payload.exists.guard';
+import { PayloadPipe } from '../pipes/payload.exists.pipe';
 import { AnnouncementByIdParam } from '../swagger/param/announcement.param';
 import { ImageByNameParam } from '../swagger/param/image.param';
 import { ApiQueryParam } from '../swagger/param/query.param';
@@ -74,11 +74,7 @@ export class UserAnnouncementController {
   constructor(private readonly _service: AnnouncementService) {}
 
   @Post()
-  @UsePipes(
-    new ValidationPipe({
-      whitelist: true,
-    }),
-  )
+  //@UsePipes(PayloadPipe)
   @UseInterceptors(
     FilesInterceptor('images', ImageEnum.MAX_IMAGE_QUANTITY, {
       limits: { fileSize: ImageEnum.MAX_FILE_SIZE_IN_BYTES },
@@ -128,14 +124,7 @@ export class UserAnnouncementController {
   }
 
   @Put(':announcement_id')
-  @UseGuards(new PayloadGuard())
-  @UsePipes(
-    new ValidationPipe({
-      whitelist: true,
-      skipMissingProperties: true,
-      forbidNonWhitelisted: true,
-    }),
-  )
+  @UsePipes(PayloadPipe)
   @ApiParam(UserByIdParam)
   @ApiParam(AnnouncementByIdParam)
   @ApiOkResponse(UpdateOneAnnouncementResponse)

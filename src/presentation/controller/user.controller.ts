@@ -39,13 +39,13 @@ import {
   UserParamRedefinePasswordDTO,
   UserRedefinePasswordDTO,
 } from '../dto/user.dto';
-import { PayloadGuard } from '../guard/payload.exists.guard';
+import { PayloadPipe } from '../pipes/payload.exists.pipe';
 import {
   BadRequestValidationErrorResponse,
   InternalServerErrorResponse,
 } from '../swagger/response/error.response';
 import {
-  UserConlifctErrorResponse,
+  UserConflictErrorResponse,
   UserCreatedResponse,
   UserForbiddenErrorResponse,
   UserNoContentResponse,
@@ -61,16 +61,11 @@ export class UserController {
   constructor(private readonly _service: UserService) {}
 
   @Post()
-  @UseGuards(new PayloadGuard())
-  @UsePipes(
-    new ValidationPipe({
-      whitelist: true,
-    }),
-  )
+  //@UsePipes(PayloadPipe)
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
   @ApiCreatedResponse(UserCreatedResponse)
-  @ApiConflictResponse(UserConlifctErrorResponse)
+  @ApiConflictResponse(UserConflictErrorResponse)
   @ApiBadRequestResponse(BadRequestValidationErrorResponse)
   @ApiInternalServerErrorResponse(InternalServerErrorResponse)
   async create(@Body() dto: CreateUserDTO): Promise<object> {
@@ -90,7 +85,7 @@ export class UserController {
   }
 
   @Put(':user_id')
-  @UseGuards(new PayloadGuard())
+  @UsePipes(PayloadPipe)
   @UsePipes(
     new ValidationPipe({
       whitelist: true,
@@ -103,7 +98,7 @@ export class UserController {
   @ApiParam({ name: 'user_id', description: 'Id do usuário' })
   @ApiOkResponse(UserOkResponse)
   @ApiNotFoundResponse(UserNotFoundErrorResponse)
-  @ApiConflictResponse(UserConlifctErrorResponse)
+  @ApiConflictResponse(UserConflictErrorResponse)
   @ApiBadRequestResponse(BadRequestValidationErrorResponse)
   @ApiInternalServerErrorResponse(InternalServerErrorResponse)
   async updateById(
@@ -127,12 +122,7 @@ export class UserController {
   }
 
   @Patch('/:user_id/password')
-  @UseGuards(new PayloadGuard())
-  @UsePipes(
-    new ValidationPipe({
-      whitelist: true,
-    }),
-  )
+  @UsePipes(PayloadPipe)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiParam({ name: 'user_id', description: 'Id do usuário' })
   @ApiConsumes('application/json')
@@ -154,7 +144,6 @@ export class UserController {
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
   @ApiNotFoundResponse(UserNotFoundErrorResponse)
-  
   async sendRecoveryLink(
     @Param() param: UserParamByIdDTO,
     @Body() dto: sendRecoveryLinkDTO,

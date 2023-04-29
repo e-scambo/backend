@@ -15,7 +15,6 @@ export async function bootstrapTest(): Promise<INestApplication> {
       ConfigModule.forRoot(),
       MongooseModule.forRoot(process.env.TEST_DATABASE_URL, {
         retryDelay: 2000,
-        retryAttempts: 3,
       }),
       MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
       MailerModule.forRoot({

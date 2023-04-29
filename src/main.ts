@@ -18,7 +18,11 @@ async function bootstrap() {
 }
 
 function setMiddlewares(app: INestApplication): void {
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+    }),
+  );
   app.useGlobalInterceptors(new TimeoutInterceptor());
   app.useGlobalFilters(new AllExceptionsFilter());
   MorganLogger.config(app);

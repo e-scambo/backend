@@ -92,7 +92,7 @@ describe('UserAnnouncementController (e2e)', () => {
     });
 
     describe('when there are validation errors', () => {
-      it('should return BadRequestException for does not inform required params', async () => {
+      it('should return BadRequestException when required params are not informed', async () => {
         const response = await request
           .post(`/users/${getId('objectId')}/announcements`)
           .expect(HttpStatus.BAD_REQUEST);

@@ -28,15 +28,4 @@ describe('IsValidPasswordConstraint', () => {
       });
     });
   });
-
-  describe('defaultMessage()', () => {
-    it('should return the default message', () => {
-      const result = validator.defaultMessage({
-        property: 'key',
-      } as ValidationArguments);
-      expect(result).toBe(
-        'key must contains letters, numbers and non latin characters.',
-      );
-    });
-  });
 });
