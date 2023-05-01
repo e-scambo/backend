@@ -25,6 +25,7 @@ describe('ImageController (e2e)', () => {
     await app.init();
     request = Request(app.getHttpServer());
     model = app.get(getModelToken(Image.name));
+    await model.deleteMany({});
     savedImage = await model.create({
       ...ImageMock.request,
       originalname: `IMG_${new Date().getTime()}_${getStr(16, 'hex')}_${getId(

@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { FilterQuery } from 'mongoose';
 import { UserRepository } from '../../infrastructure/repository/user.repository';
@@ -13,10 +14,15 @@ import {
   UpdateUserDTO,
 } from '../../presentation/dto/user.dto';
 import { PasswordUtil } from '../util/password.util';
+import { Jwt_Payload, TokenUtil } from '../util/token.util';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly _repository: UserRepository) {}
+  constructor(
+    private readonly _repository: UserRepository,
+    private readonly _mailService: MailerService,
+  ) {}
 
   async create(item: CreateUserDTO): Promise<User> {
     await this.validateUnique({
@@ -28,6 +34,7 @@ export class UserService {
 
   async findById(_id: string): Promise<User> {
     const result: User = await this._repository.findOne({ _id });
+
     if (!result) {
       throw new NotFoundException('User not found or already removed.');
     }
@@ -80,6 +87,55 @@ export class UserService {
     }
     const password: string = PasswordUtil.encrypt(passwords.new_password);
     await this._repository.updateOne({ _id }, { password });
+  }
+
+  async sendRecoveryLink(_id: string): Promise<void> {
+    // 1. Buscar usuário e verificar se o mesmo existe
+    const user: User = await this._repository.findOne({
+      _id: _id,
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found or already removed.');
+    }
+
+    const recoveryToken = TokenUtil.generateToken(_id, 0); // gerar token com o id
+
+    const link = `${process.env.CLIENT}/activateaccount/${recoveryToken}`;
+    const emailConfig = {
+      from: `${process.env.GMAIL_USER}`, // sender address
+      to: user.email, // receiver (use array of string for a list)
+      subject: 'Etroka recover password', // Subject line
+      html: `
+      <h2>Recover Password</h2>
+      <a href="${link}">
+      Click this link to get to recover your password.                              
+      </a>
+
+      `,
+      text: link,
+    };
+
+    this._mailService.sendMail(emailConfig);
+  }
+
+  async redefinePassword(token: string, newPassword: string) {
+    try {
+      const payload = TokenUtil.verifyToken(token, 0) as Jwt_Payload;
+
+      const doesUserExist = await this._repository.checkExists({
+        id: payload.sub,
+      });
+
+      if (!doesUserExist) {
+        throw new UnauthorizedException(
+          'Invalid credentials. Please try again with valid credentials.',
+        );
+      }
+
+      const password: string = PasswordUtil.encrypt(newPassword);
+      await this._repository.updateOne({ _id: payload._id }, { password });
+    } catch (err) {}
   }
 
   private async validateUnique(filter: FilterQuery<UserDocument>) {

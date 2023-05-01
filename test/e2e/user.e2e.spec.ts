@@ -3,7 +3,6 @@ import { getModelToken } from '@nestjs/mongoose';
 import { getId, getStr } from 'json-generator';
 import { Model } from 'mongoose';
 import * as Request from 'supertest';
-import { PasswordUtil } from '../../src/business/util/password.util';
 import {
   User,
   UserDocument,
@@ -15,6 +14,7 @@ import {
   validateConflictRequestBody,
   validateForbiddenBody,
   validateNotFoundBody,
+  validateUnauthorizedBody,
 } from '../util/exception.validation.util';
 
 describe('UserController (e2e)', () => {
@@ -28,6 +28,10 @@ describe('UserController (e2e)', () => {
     await app.init();
     request = Request(app.getHttpServer());
     userModel = app.get(getModelToken(User.name));
+  });
+
+  beforeAll(async () => {
+    await userModel.deleteMany({});
   });
 
   afterAll(async () => {
@@ -44,6 +48,30 @@ describe('UserController (e2e)', () => {
 
         validateSuccessBody(response.body);
         savedUser = response.body;
+      });
+
+      it('should log the created user in', async () => {
+        const response = await request
+          .post('/auth')
+          .send(UserMock.request)
+          .expect(HttpStatus.OK);
+
+        savedUser.accessToken = response.body.access_token;
+      });
+
+      it('should return the created user (two users in the database)', async () => {
+        const response = await request
+          .post('/users')
+          .send({ ...UserMock.request2 })
+          .expect(HttpStatus.CREATED);
+
+        expect(response.body).toHaveProperty('id');
+        expect(response.body).toHaveProperty('name', UserMock.request2.name);
+        expect(response.body).toHaveProperty('email', UserMock.request2.email);
+        expect(response.body).not.toHaveProperty('password');
+        expect(response.body).toHaveProperty('phone', UserMock.request2.phone);
+        expect(response.body).toHaveProperty('state', UserMock.request2.state);
+        expect(response.body).toHaveProperty('city', UserMock.request2.city);
       });
     });
 
@@ -108,11 +136,12 @@ describe('UserController (e2e)', () => {
       it('it should return BadRequestException for invalid password', async () => {
         const response = await request
           .post('/users')
-          .send({ password: 'H3llo-+worD*<br>' })
+          .send({ ...UserMock.request, password: 'Hllo-+worD*<br>' })
+
           .expect(HttpStatus.BAD_REQUEST);
 
         validateBadRequestDTOBody(response.body, [
-          'password must contains letters, numbers and the special characters: !@#$%&*',
+          'The password must contain at least one digit.',
         ]);
       });
 
@@ -189,14 +218,11 @@ describe('UserController (e2e)', () => {
   });
 
   describe('PUT /users/:user_id', () => {
-    afterAll(async () => {
-      savedUser = await saveUser();
-    });
-
     describe('when update a user by id is successful', () => {
       it('should return the updated user', async () => {
         const response = await request
           .put(`/users/${savedUser.id}`)
+          .set('Authorization', 'Bearer ' + savedUser.accessToken)
           .send({ name: UserMock.request.name })
           .expect(HttpStatus.OK);
         validateSuccessBody(response.body);
@@ -206,8 +232,9 @@ describe('UserController (e2e)', () => {
     describe('when another user contains the same unique fields', () => {
       it('should return BadRequestException for same email', async () => {
         const response = await request
-          .put(`/users/${getId('objectId')}`)
-          .send({ email: UserMock.request.email })
+          .put(`/users/${savedUser.id}`)
+          .set('Authorization', 'Bearer ' + savedUser.accessToken)
+          .send({ email: UserMock.request2.email })
           .expect(HttpStatus.CONFLICT);
 
         validateConflictRequestBody(
@@ -218,8 +245,9 @@ describe('UserController (e2e)', () => {
 
       it('should return BadRequestException for same phone', async () => {
         const response = await request
-          .put(`/users/${getId('objectId')}`)
-          .send({ phone: UserMock.request.phone })
+          .put(`/users/${savedUser.id}`)
+          .set('Authorization', 'Bearer ' + savedUser.accessToken)
+          .send({ phone: UserMock.request2.phone })
           .expect(HttpStatus.CONFLICT);
 
         validateConflictRequestBody(
@@ -230,35 +258,41 @@ describe('UserController (e2e)', () => {
     });
 
     describe('when the user does not exists', () => {
-      it('should return NOtFoundException', async () => {
-        await userModel.deleteMany({});
-
+      //under the current configuration this is not possible,
+      //in order to make this request proceed we would have to have a token
+      //generated with a non existent objectId(), thus this will never happen
+      it("should return Unauthorized exception when the ids don't match", async () => {
         const response = await request
-          .put(`/users/${savedUser.id}`)
+          .put(`/users/${getId('objectId')}`)
+          .set('Authorization', 'Bearer ' + savedUser.accessToken)
           .send({ name: UserMock.request.name })
-          .expect(HttpStatus.NOT_FOUND);
-        validateNotFoundBody(
+          .expect(HttpStatus.FORBIDDEN);
+        validateForbiddenBody(
           response.body,
-          'User not found or already removed.',
+          "A user cannot alter another's user data.",
         );
       });
     });
 
     describe('when validation error occurs', () => {
-      it('should return BadRequestException for invalid id', async () => {
+      //given that guards are called before pipes, it will fall under ids.match guard
+      //it ends returning an unauthorized exception.
+      it('should return UnauthorizedException for invalid id', async () => {
         const response = await request
           .put('/users/123')
+          .set('Authorization', 'Bearer ' + savedUser.accessToken)
           .send({ phone: UserMock.request.phone })
-          .expect(HttpStatus.BAD_REQUEST);
-
-        validateBadRequestDTOBody(response.body, [
-          'user_id must be a mongodb id',
-        ]);
+          .expect(HttpStatus.FORBIDDEN);
+        validateForbiddenBody(
+          response.body,
+          "A user cannot alter another's user data.",
+        );
       });
 
       it('it should return BadRequestException for invalid name', async () => {
         const response = await request
           .put(`/users/${savedUser.id}`)
+          .set('Authorization', 'Bearer ' + savedUser.accessToken)
           .send({ name: ' 1nv4l1d  n4m3 ' })
           .expect(HttpStatus.BAD_REQUEST);
 
@@ -270,6 +304,7 @@ describe('UserController (e2e)', () => {
       it('it should return BadRequestException for invalid email', async () => {
         const response = await request
           .put(`/users/${savedUser.id}`)
+          .set('Authorization', 'Bearer ' + savedUser.accessToken)
           .send({ email: 'invalid' })
           .expect(HttpStatus.BAD_REQUEST);
 
@@ -279,6 +314,7 @@ describe('UserController (e2e)', () => {
       it('it should return BadRequestException for send password', async () => {
         const response = await request
           .put(`/users/${savedUser.id}`)
+          .set('Authorization', 'Bearer ' + savedUser.accessToken)
           .send({ password: 'n3wp4ssw0rd' })
           .expect(HttpStatus.BAD_REQUEST);
 
@@ -290,6 +326,7 @@ describe('UserController (e2e)', () => {
       it('it should return BadRequestException for invalid city', async () => {
         const response = await request
           .put(`/users/${savedUser.id}`)
+          .set('Authorization', 'Bearer ' + savedUser.accessToken)
           .send({ city: '  1n@v4l1d C1ty12321 ' })
           .expect(HttpStatus.BAD_REQUEST);
 
@@ -301,6 +338,7 @@ describe('UserController (e2e)', () => {
       it('it should return BadRequestException for invalid state', async () => {
         const response = await request
           .put(`/users/${savedUser.id}`)
+          .set('Authorization', 'Bearer ' + savedUser.accessToken)
           .send({ state: '  1n@v4l1d St4t3 ' })
           .expect(HttpStatus.BAD_REQUEST);
 
@@ -312,6 +350,7 @@ describe('UserController (e2e)', () => {
       it('it should return BadRequestException for invalid phone', async () => {
         const response = await request
           .put(`/users/${savedUser.id}`)
+          .set('Authorization', 'Bearer ' + savedUser.accessToken)
           .send({ phone: '83999988123asd88888577' })
           .expect(HttpStatus.BAD_REQUEST);
 
@@ -321,97 +360,109 @@ describe('UserController (e2e)', () => {
       });
     });
   });
+  describe('PATCH /users/:user_id/password', () => {
+    let newPassword: any;
+    let currentPassword: any;
+    beforeAll(async () => {
+      currentPassword = UserMock.request.password;
+      newPassword = getStr(12) + '@3Ds';
+    });
 
-  describe('DELETE /users/:user_id', () => {
-    describe('when delete a user by id is successful', () => {
-      it('should return nothing', async () => {
+    describe(`when changing a user's password successfully`, () => {
+      it(`should change user's password`, async () => {
         const response = await request
-          .delete(`/users/${savedUser.id}`)
+          .patch(`/users/${savedUser.id}/password`)
+          .set('Authorization', 'Bearer ' + savedUser.accessToken)
+          .send({
+            current_password: currentPassword,
+            new_password: newPassword,
+          })
           .expect(HttpStatus.NO_CONTENT);
+        savedUser.password = newPassword;
         expect(response.body).toMatchObject({});
       });
     });
 
-    describe('when the user is not founded on database', () => {
-      it('should return NotFoundException', async () => {
+    describe(`when changing a user's password with incorrect current password`, () => {
+      it('should return forbidden exception', async () => {
         const response = await request
-          .delete(`/users/${savedUser.id}`)
-          .expect(HttpStatus.NOT_FOUND);
-
-        validateNotFoundBody(
+          .patch(`/users/${savedUser.id}/password`)
+          .set('Authorization', 'Bearer ' + savedUser.accessToken)
+          .send({
+            current_password: currentPassword,
+            new_password: newPassword,
+          })
+          .expect(HttpStatus.FORBIDDEN);
+        validateForbiddenBody(
           response.body,
-          'User not found or already removed.',
+          'The password informed does not match with current password.',
+        );
+      });
+    });
+  });
+
+  describe('DELETE /users/:user_id', () => {
+    describe('when there area validation errors', () => {
+      //given that guards are called before pipes, it will fall under ids.match guard
+      //it ends returning an unauthorized exception.
+      it('should return BadRequestException for does not inform required params', async () => {
+        const response = await request
+          .delete('/users/123')
+          .set('Authorization', 'Bearer ' + savedUser.accessToken)
+          .expect(HttpStatus.FORBIDDEN);
+
+        validateForbiddenBody(
+          response.body,
+          "A user cannot alter another's user data.",
         );
       });
     });
 
-    describe('when there area validation errors', () => {
-      it('should return BadRequestException for does not inform required params', async () => {
+    describe('when delete a user by id is successful', () => {
+      it('should return nothing', async () => {
         const response = await request
-          .delete('/users/123')
-          .expect(HttpStatus.BAD_REQUEST);
+          .delete(`/users/${savedUser.id}`)
+          .set('Authorization', 'Bearer ' + savedUser.accessToken)
+          .expect(HttpStatus.NO_CONTENT);
 
-        validateBadRequestDTOBody(response.body, [
-          'user_id must be a mongodb id',
-        ]);
+        expect(response.body).toMatchObject({});
       });
     });
 
-    describe('PATCH /users/:user_id/password', () => {
-      let newPassword: any;
-      let currentPassword: any;
-      beforeAll(async () => {
-        await userModel.deleteMany({});
-        savedUser = await saveUser();
-        currentPassword = 'secretPassWord';
-        newPassword = getStr(12);
+    //under the current configuration this is not possible,
+    //in order to make this request proceed we would have to have a token
+    //generated with a non existent objectId(), thus this will never happen
+    //and user can only delete itself, so we can have a registered user trying to delete
+    //another one regardless if the user_id informed is attached to a real user,
+    // it returns unauthorized
+    describe('when the user is not founded on database', () => {
+      it('should return UnauthorizedException', async () => {
+        const response = await request
+          .delete(`/users/${savedUser.id}`)
+          .set('Authorization', 'Bearer ' + savedUser.accessToken)
+          .expect(HttpStatus.UNAUTHORIZED);
+
+        validateUnauthorizedBody(
+          response.body,
+          'JsonWebTokenError: invalid token.',
+        );
       });
+      //since the user no longer exists, it fails that token validation given that
+      //the token validation check for the user;
+      it('should return unauthorized exception', async () => {
+        const response = await request
+          .patch(`/users/${savedUser.id}/password`)
+          .set('Authorization', 'Bearer ' + savedUser.accessToken)
+          .send({
+            current_password: savedUser.newPassword, //current password
+            new_password: UserMock.request.password,
+          })
+          .expect(HttpStatus.UNAUTHORIZED);
 
-      describe(`when changing a user's password succsfully`, () => {
-        it(`should change user's password`, async () => {
-          const response = await request
-            .patch(`/users/${savedUser.id}/password`)
-            .send({
-              current_password: currentPassword,
-              new_password: newPassword,
-            })
-            .expect(HttpStatus.NO_CONTENT);
-          expect(response.body).toMatchObject({});
-        });
-      });
-
-      describe(`when changing a user's password with incorrect current password`, () => {
-        it('should return forbidden exception', async () => {
-          const response = await request
-            .patch(`/users/${savedUser.id}/password`)
-            .send({
-              current_password: currentPassword,
-              new_password: newPassword,
-            })
-            .expect(HttpStatus.FORBIDDEN);
-          validateForbiddenBody(
-            response.body,
-            'The password informed does not match with current password.',
-          );
-        });
-      });
-
-      describe(`when changing user's passord`, () => {
-        it('should return not found exception', async () => {
-          await userModel.deleteMany({});
-          const response = await request
-            .patch(`/users/${savedUser.id}/password`)
-            .send({
-              current_password: currentPassword,
-              new_password: newPassword,
-            })
-            .expect(HttpStatus.NOT_FOUND);
-
-          validateNotFoundBody(
-            response.body,
-            'User not found or already removed.',
-          );
-        });
+        validateUnauthorizedBody(
+          response.body,
+          'JsonWebTokenError: invalid token.',
+        );
       });
     });
   });
@@ -424,11 +475,5 @@ describe('UserController (e2e)', () => {
     expect(body).toHaveProperty('phone', UserMock.request.phone);
     expect(body).toHaveProperty('state', UserMock.request.state);
     expect(body).toHaveProperty('city', UserMock.request.city);
-  };
-
-  const saveUser = async () => {
-    const newUser = { ...UserMock.request };
-    newUser.password = PasswordUtil.encrypt(newUser.password);
-    return userModel.create(newUser);
   };
 });

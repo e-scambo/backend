@@ -121,7 +121,7 @@ export const UserForbiddenErrorResponse = {
   type: UserForbiddenResponse,
 };
 
-export const UserConlifctErrorResponse = {
+export const UserConflictErrorResponse = {
   description: 'Dados informados já existem no banco',
   type: UserNotUniqueResponse,
 };

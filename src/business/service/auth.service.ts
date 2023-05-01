@@ -18,6 +18,6 @@ export class AuthService {
         'Invalid credentials. Please try again with valid credentials.',
       );
     }
-    return TokenUtil.generateAccessToken(user.id);
+    return TokenUtil.generateToken(user.id, 1);
   }
 }

@@ -11,13 +11,16 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors();
-
   setMiddlewares(app);
   await app.listen(PORT);
 }
 
 function setMiddlewares(app: INestApplication): void {
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+    }),
+  );
   app.useGlobalInterceptors(new TimeoutInterceptor());
   app.useGlobalFilters(new AllExceptionsFilter());
   MorganLogger.config(app);

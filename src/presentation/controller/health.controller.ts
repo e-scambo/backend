@@ -1,10 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { HealthCheckService, MongooseHealthIndicator } from '@nestjs/terminus';
-import {
-  ApiOkResponse,
-  ApiProduces,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiOkResponse, ApiProduces, ApiTags } from '@nestjs/swagger';
 import { HealthOkResponse } from '../swagger/response/health.response';
 
 @Controller('health')

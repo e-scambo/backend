@@ -6,6 +6,7 @@ import {
   IsMongoId,
   IsNotEmpty,
   IsString,
+  Matches,
   MaxLength,
   MinLength,
   ValidateIf,
@@ -155,6 +156,37 @@ export class UpdateUserDTO {
   @IsNotEmpty()
   @IsValidPhone()
   phone: string;
+}
+
+export class UserParamRedefinePasswordDTO {
+  @ApiProperty({
+    writeOnly: true,
+    description: 'jwt token',
+    example: '',
+  })
+  @IsDefined()
+  @IsString()
+  @Matches(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/, {
+    message: 'Invalid JWT token',
+  })
+  @IsNotEmpty()
+  token: string;
+}
+
+export class UserRedefinePasswordDTO {
+  @ApiProperty({
+    writeOnly: true,
+    description: 'jwt token',
+    example:
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaXJqb2FuZGVyc29ud2ZAZ21haWwuY29tIiwiaWF0IjoxNjgxOTE2Nzk5LCJleHAiOjE2ODI1MjE1OTl9.q6TbxRC-bi_bKDHZXTPMWML_PLYZ_HaD2qwiTTBG-KU',
+  })
+  @IsDefined()
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(8)
+  @MaxLength(20)
+  @IsValidPassword()
+  password: string;
 }
 
 export class UpdatePasswordDTO {

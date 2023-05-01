@@ -7,10 +7,8 @@ import {
   HttpStatus,
   Param,
   Post,
-  UseGuards,
   UseInterceptors,
   UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -31,7 +29,7 @@ import { FavoriteService } from '../../business/service/favorite.service';
 import { FavoriteInterceptor } from '../../config/interceptor/favorite.interceptor';
 import { CreateFavoriteDTO, FavoriteParamByIdDTO } from '../dto/favorite.dto';
 import { UserParamByIdDTO } from '../dto/user.dto';
-import { PayloadGuard } from '../guard/payload.exists.guard';
+import { PayloadPipe } from '../pipes/payload.exists.pipe';
 import { ApiQueryParam } from '../swagger/param/query.param';
 import {
   BadRequestValidationErrorResponse,
@@ -53,12 +51,7 @@ export class UserFavoriteController {
   constructor(private readonly _service: FavoriteService) {}
 
   @Post()
-  @UseGuards(new PayloadGuard())
-  @UsePipes(
-    new ValidationPipe({
-      whitelist: true,
-    }),
-  )
+  @UsePipes(PayloadPipe)
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
   @ApiParam({ name: 'user_id', description: 'Id do usuário' })
