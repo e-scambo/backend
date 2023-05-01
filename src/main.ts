@@ -8,10 +8,8 @@ import { Swagger } from './presentation/swagger/swagger';
 
 async function bootstrap() {
   const { PORT } = process.env;
-  const { CLIENT } = process.env;
   const app = await NestFactory.create(AppModule);
 
-  const whitelist = [CLIENT];
   app.enableCors();
   setMiddlewares(app);
   await app.listen(PORT);
