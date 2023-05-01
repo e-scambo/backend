@@ -5,7 +5,7 @@ export class ImageMock {
   static get request() {
     const file = readFileSync('test/asset/nestjs.png');
     return {
-      mimetype: 'image/jpeg',
+      mimetype: 'image/png',
       size: file.length,
       buffer: file,
       originalname: 'nestjs.png',
