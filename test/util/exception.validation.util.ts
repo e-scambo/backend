@@ -32,3 +32,9 @@ export function validateForbiddenBody(body: any, message: string) {
   expect(body).toHaveProperty('message', message);
   expect(body).toHaveProperty('error', 'Forbidden');
 }
+
+export function validateUnauthorizedBody(body: any, message: string) {
+  expect(body).toHaveProperty('statusCode', HttpStatus.UNAUTHORIZED);
+  expect(body).toHaveProperty('message', message);
+  expect(body).toHaveProperty('error', 'Unauthorized');
+}

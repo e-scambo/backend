@@ -23,9 +23,7 @@ describe('PasswordValidatorUtil', () => {
       });
 
       it('should return false', () => {
-        const result = PasswordValidatorUtil.isValidPassword(
-          'asd',
-        );
+        const result = PasswordValidatorUtil.isValidPassword('asd');
         expect(result).toEqual(false);
       });
     });

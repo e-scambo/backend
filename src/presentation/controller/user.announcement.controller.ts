@@ -10,10 +10,8 @@ import {
   Put,
   UploadedFile,
   UploadedFiles,
-  UseGuards,
   UseInterceptors,
   UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import {

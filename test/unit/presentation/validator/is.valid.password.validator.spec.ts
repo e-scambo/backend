@@ -1,4 +1,3 @@
-import { ValidationArguments } from 'class-validator';
 import { IsValidPasswordConstraint } from '../../../../src/presentation/validator/is.valid.password.validator';
 
 describe('IsValidPasswordConstraint', () => {

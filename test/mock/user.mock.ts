@@ -12,6 +12,17 @@ export class UserMock {
     };
   }
 
+  static get request2() {
+    return {
+      name: 'Carl Hoen',
+      email: 'carlhoen@mail.com',
+      password: 'secre5@tPasSword',
+      phone: '(88) 99888-8888',
+      state: 'State of Tests',
+      city: 'City of Tests',
+    };
+  }
+
   static get response() {
     return {
       ...UserMock.request,

@@ -124,7 +124,7 @@ export class UserService {
       const payload = TokenUtil.verifyToken(token, 0) as Jwt_Payload;
 
       const doesUserExist = await this._repository.checkExists({
-        id: payload.id,
+        id: payload.sub,
       });
 
       if (!doesUserExist) {

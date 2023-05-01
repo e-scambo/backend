@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { UserService } from '../../business/service/user.service';
-import { Jwt_Payload, TokenUtil } from 'src/business/util/token.util';
+import { Jwt_Payload, TokenUtil } from '../../business/util/token.util';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -18,13 +18,13 @@ export class JwtAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
 
     if (!request.headers.authorization) {
-      return false;
+      throw new UnauthorizedException('Lack credentials.');
     }
 
     const token = request.headers.authorization.replace('Bearer ', '');
 
     if (!token) {
-      return false;
+      throw new UnauthorizedException('Lack credentials.');
     }
 
     const payload = TokenUtil.verifyToken(token, 1) as Jwt_Payload;
@@ -36,8 +36,8 @@ export class JwtAuthGuard implements CanActivate {
 
         return true;
       })
-      .catch((err) => {
-        throw new UnauthorizedException('JsonWebTokenError: invalid token');
+      .catch(() => {
+        throw new UnauthorizedException('JsonWebTokenError: invalid token.');
       });
   }
 }

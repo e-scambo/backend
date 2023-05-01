@@ -61,7 +61,6 @@ export class UserController {
   constructor(private readonly _service: UserService) {}
 
   @Post()
-  //@UsePipes(PayloadPipe)
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
   @ApiCreatedResponse(UserCreatedResponse)

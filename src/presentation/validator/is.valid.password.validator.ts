@@ -8,7 +8,7 @@ import {
 
 @ValidatorConstraint({ async: true })
 export class IsValidPasswordConstraint implements ValidatorConstraintInterface {
-  message: string = '';
+  message = '';
   validate(value: any, args?: ValidationArguments) {
     const relatedValue = args?.object?.[args?.constraints?.[0]];
     const bool = relatedValue
@@ -38,7 +38,7 @@ export class IsValidPasswordConstraint implements ValidatorConstraintInterface {
 
     return bool && isValidPassword;
   }
-  defaultMessage(args: ValidationArguments) {
+  defaultMessage() {
     const temp = this.message.trim();
     this.message = '';
     return temp;
@@ -46,7 +46,7 @@ export class IsValidPasswordConstraint implements ValidatorConstraintInterface {
 }
 
 export function IsValidPassword(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
       target: object.constructor,
       propertyName: propertyName,

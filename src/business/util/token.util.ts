@@ -8,22 +8,33 @@ export interface Jwt_Payload extends JwtPayload {
 
 export class TokenUtil {
   static generateToken(ownerId: string, key: number): string | undefined {
-    const { JWT_SECRET, JWT_RECOVER_PASS, JWT_TOKEN_EXPIRATION } = process.env;
+    const {
+      JWT_SECRET,
+      JWT_RECOVER_PASS,
+      JWT_TOKEN_EXPIRATION,
+      JWT_RECOVER_PASS_EXPIRATION,
+    } = process.env;
     if (!ownerId) return undefined;
-   
-    const secret = () => {
-      if (key === 0) return JWT_RECOVER_PASS;
 
-      return JWT_SECRET;
-    };
     try {
-      return sign(
-        {
-          sub: ownerId,
-        },
-        secret(),
-        { expiresIn: JWT_TOKEN_EXPIRATION },
-      );
+      switch (key) {
+        case 0:
+          return sign(
+            {
+              sub: ownerId,
+            },
+            JWT_RECOVER_PASS,
+            { expiresIn: JWT_RECOVER_PASS_EXPIRATION },
+          );
+        default:
+          return sign(
+            {
+              sub: ownerId,
+            },
+            JWT_SECRET,
+            { expiresIn: JWT_TOKEN_EXPIRATION },
+          );
+      }
     } catch (err) {
       return undefined;
     }
@@ -44,7 +55,7 @@ export class TokenUtil {
           return verify(token, JWT_SECRET);
       }
     } catch (err) {
-      throw new UnauthorizedException('JsonWebTokenError: invalid token');
+      throw new UnauthorizedException('JsonWebTokenError: invalid token.');
     }
   }
 

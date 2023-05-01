@@ -163,10 +163,9 @@ describe('UserController', () => {
       it('should return undefined', async () => {
         service.sendRecoveryLink = jest.fn().mockResolvedValueOnce(undefined);
 
-        const result = await controller.sendRecoveryLink(
-          { user_id: UserMock.response._id },
-          { email: UserMock.response.email },
-        );
+        const result = await controller.sendRecoveryLink({
+          user_id: UserMock.response._id,
+        });
 
         expect(result).toBeUndefined();
       });
@@ -179,10 +178,7 @@ describe('UserController', () => {
           .mockRejectedValueOnce(DatabaseMock.error);
 
         try {
-          await controller.sendRecoveryLink(
-            { user_id: UserMock.response._id },
-            { email: UserMock.response.email },
-          );
+          await controller.sendRecoveryLink({ user_id: UserMock.response._id });
         } catch (err) {
           expect(err).toMatchObject(DatabaseMock.error);
         }

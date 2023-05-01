@@ -7,10 +7,8 @@ import {
   HttpStatus,
   Param,
   Post,
-  UseGuards,
   UseInterceptors,
   UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
