@@ -163,7 +163,7 @@ export class AnnouncementService {
     }
 
     const result = await this._imageRepository.deleteOne({ originalname });
-    return result._id.toString();
+    return result.id.toString();
   }
 
   private async deleteImageFromAnnouncement(

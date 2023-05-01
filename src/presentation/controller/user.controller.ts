@@ -12,7 +12,6 @@ import {
   UseGuards,
   UseInterceptors,
   UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -32,7 +31,6 @@ import { UserService } from '../../business/service/user.service';
 import { UserInterceptor } from '../../config/interceptor/user.interceptor';
 import {
   CreateUserDTO,
-  sendRecoveryLinkDTO,
   UpdatePasswordDTO,
   UpdateUserDTO,
   UserParamByIdDTO,
@@ -53,6 +51,8 @@ import {
   UserOkResponse,
 } from '../swagger/response/user.response';
 import { User } from 'src/infrastructure/schema/user.schema';
+import { IdsMatchGuard } from '../guards/ids.match.guard';
+import { JwtAuthGuard } from '../guards/jwt.guard';
 
 @Controller('users')
 @ApiTags('users')
@@ -86,13 +86,7 @@ export class UserController {
 
   @Put(':user_id')
   @UsePipes(PayloadPipe)
-  @UsePipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      skipMissingProperties: true,
-    }),
-  )
+  @UseGuards(JwtAuthGuard, IdsMatchGuard)
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
   @ApiParam({ name: 'user_id', description: 'Id do usuário' })
@@ -109,6 +103,7 @@ export class UserController {
   }
 
   @Delete(':user_id')
+  @UseGuards(JwtAuthGuard, IdsMatchGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
@@ -123,6 +118,7 @@ export class UserController {
 
   @Patch('/:user_id/password')
   @UsePipes(PayloadPipe)
+  @UseGuards(JwtAuthGuard, IdsMatchGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiParam({ name: 'user_id', description: 'Id do usuário' })
   @ApiConsumes('application/json')
@@ -144,11 +140,8 @@ export class UserController {
   @ApiConsumes('application/json')
   @ApiProduces('application/json')
   @ApiNotFoundResponse(UserNotFoundErrorResponse)
-  async sendRecoveryLink(
-    @Param() param: UserParamByIdDTO,
-    @Body() dto: sendRecoveryLinkDTO,
-  ): Promise<void> {
-    return this._service.sendRecoveryLink(dto.email, param.user_id);
+  async sendRecoveryLink(@Param() param: UserParamByIdDTO): Promise<void> {
+    return this._service.sendRecoveryLink(param.user_id);
   }
 
   @Get('/redefine-password/:token')

@@ -158,19 +158,6 @@ export class UpdateUserDTO {
   phone: string;
 }
 
-export class sendRecoveryLinkDTO {
-  @ApiProperty({
-    writeOnly: true,
-    description: 'Email do usuário',
-    example: 'test@mail.com',
-  })
-  @IsDefined()
-  @IsString()
-  @IsNotEmpty()
-  @IsEmail()
-  email: string;
-}
-
 export class UserParamRedefinePasswordDTO {
   @ApiProperty({
     writeOnly: true,

@@ -29,12 +29,12 @@ export class UserService {
       $or: [{ email: item.email }, { phone: item.phone }],
     });
     item.password = PasswordUtil.encrypt(item.password);
-    console.log(item);
     return this._repository.create(item);
   }
 
   async findById(_id: string): Promise<User> {
     const result: User = await this._repository.findOne({ _id });
+
     if (!result) {
       throw new NotFoundException('User not found or already removed.');
     }
@@ -89,10 +89,9 @@ export class UserService {
     await this._repository.updateOne({ _id }, { password });
   }
 
-  async sendRecoveryLink(email: string, _id: string): Promise<void> {
+  async sendRecoveryLink(_id: string): Promise<void> {
     // 1. Buscar usuário e verificar se o mesmo existe
     const user: User = await this._repository.findOne({
-      email: email,
       _id: _id,
     });
 
@@ -105,7 +104,7 @@ export class UserService {
     const link = `${process.env.CLIENT}/activateaccount/${recoveryToken}`;
     const emailConfig = {
       from: `${process.env.GMAIL_USER}`, // sender address
-      to: email, // receiver (use array of string for a list)
+      to: user.email, // receiver (use array of string for a list)
       subject: 'Etroka recover password', // Subject line
       html: `
       <h2>Recover Password</h2>
@@ -122,10 +121,10 @@ export class UserService {
 
   async redefinePassword(token: string, newPassword: string) {
     try {
-      const payload = TokenUtil.verifyToken(token, 1) as Jwt_Payload;
+      const payload = TokenUtil.verifyToken(token, 0) as Jwt_Payload;
 
       const doesUserExist = await this._repository.checkExists({
-        _id: payload._id,
+        id: payload.id,
       });
 
       if (!doesUserExist) {

@@ -1,13 +1,16 @@
+import { UnauthorizedException } from '@nestjs/common';
 import { sign, decode, verify, JwtPayload } from 'jsonwebtoken';
+import { Types } from 'mongoose';
 
 export interface Jwt_Payload extends JwtPayload {
-  email: string;
+  id: Types.ObjectId;
 }
 
 export class TokenUtil {
   static generateToken(ownerId: string, key: number): string | undefined {
     const { JWT_SECRET, JWT_RECOVER_PASS, JWT_TOKEN_EXPIRATION } = process.env;
     if (!ownerId) return undefined;
+   
     const secret = () => {
       if (key === 0) return JWT_RECOVER_PASS;
 
@@ -33,11 +36,15 @@ export class TokenUtil {
     const { JWT_SECRET, JWT_RECOVER_PASS } = process.env;
     if (!token) return undefined;
 
-    switch (key) {
-      case 0:
-        return verify(token, JWT_RECOVER_PASS);
-      default:
-        return verify(token, JWT_SECRET);
+    try {
+      switch (key) {
+        case 0:
+          return verify(token, JWT_RECOVER_PASS);
+        default:
+          return verify(token, JWT_SECRET);
+      }
+    } catch (err) {
+      throw new UnauthorizedException('JsonWebTokenError: invalid token');
     }
   }
 

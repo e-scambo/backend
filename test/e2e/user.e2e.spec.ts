@@ -30,6 +30,10 @@ describe('UserController (e2e)', () => {
     userModel = app.get(getModelToken(User.name));
   });
 
+  beforeAll(async () => {
+    await userModel.deleteMany({});
+  });
+
   afterAll(async () => {
     await Promise.all([app.close(), userModel.deleteMany({})]);
   });
@@ -108,9 +112,9 @@ describe('UserController (e2e)', () => {
       it('it should return BadRequestException for invalid password', async () => {
         const response = await request
           .post('/users')
-          .send({ ...UserMock.request, password: 'Hllo-+worD*<br>' });
+          .send({ ...UserMock.request, password: 'Hllo-+worD*<br>' })
 
-        //.expect(HttpStatus.BAD_REQUEST);
+          .expect(HttpStatus.BAD_REQUEST);
 
         validateBadRequestDTOBody(response.body, [
           'The password must contain at least one digit.',
@@ -375,9 +379,9 @@ describe('UserController (e2e)', () => {
             .send({
               current_password: currentPassword,
               new_password: newPassword,
-            });
-          //.expect(HttpStatus.NO_CONTENT);
-          console.log(response.body);
+            })
+            .expect(HttpStatus.NO_CONTENT);
+
           expect(response.body).toMatchObject({});
         });
       });
