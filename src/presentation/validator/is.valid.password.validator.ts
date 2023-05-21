@@ -21,20 +21,22 @@ export class IsValidPasswordConstraint implements ValidatorConstraintInterface {
         'The password must contain at least one lowercase character. ';
       isValidPassword = false;
     }
-    if (!/(.*[A-Z])/.test(value)) {
-      this.message +=
-        'The password must contain at least one uppercase character. ';
-      isValidPassword = false;
-    }
+    // TODO: Validation removed temporarily. Uncomment after integration test with frontend.
+    // if (!/(.*[A-Z])/.test(value)) {
+    //   this.message +=
+    //     'The password must contain at least one uppercase character. ';
+    //   isValidPassword = false;
+    // }
     if (!/(.*\d)/.test(value)) {
       this.message += 'The password must contain at least one digit. ';
       isValidPassword = false;
     }
-    if (!/(.*[^a-zA-Z0-9])/.test(value)) {
-      this.message +=
-        'The password must contain at least one non latin character.';
-      isValidPassword = false;
-    }
+    // TODO: Validation removed temporarily. Uncomment after integration test with frontend.
+    // if (!/(.*[^a-zA-Z0-9])/.test(value)) {
+    //   this.message +=
+    //     'The password must contain at least one non latin character.';
+    //   isValidPassword = false;
+    // }
 
     return bool && isValidPassword;
   }
